@@ -173,26 +173,26 @@ RUN chroot ${CHROOT} sh -c "                                                  \
         /usr/games                                                            \
         /usr/local/games                                                      \
         /usr/share/emacs                                                      \
-        /usr/share/zoneinfo/*                                                 \
+        /usr/share/info/*                                                     \
+        /usr/share/groff/*                                                    \
+        /usr/share/linda/*                                                    \
+        /usr/share/lintian/*                                                  \
+        /usr/share/locale/*                                                   \
+        /usr/share/man/*                                                      \
         /usr/share/vim                                                        \
+        /usr/share/zoneinfo/*                                                 \
         /var/cache/man                                                        \
     ; find                                                                    \
-        /usr/share/lintian/overrides                                          \
         /var/cache/apt                                                        \
         /var/lib/apt/lists                                                    \
         /var/log                                                              \
         -type f | xargs rm -f                                                 \
     ; find                                                                    \
-        /usr/share/info                                                       \
-        /usr/share/locale                                                     \
-        /usr/share/man                                                        \
-        -mindepth 1 -maxdepth 1 | xargs rm -rf                                \
-    ; find                                                                    \
         /usr/share/doc                                                        \
         -mindepth 1 -type f -not -name 'copyright' | xargs rm -rf             \
     ; find                                                                    \
         /usr/share/doc                                                        \
-        -type d -name 'examples' | xargs rm -rf                               \
+        -empty | xargs rm -rf                                                 \
 "
 ###############################################################################
 
