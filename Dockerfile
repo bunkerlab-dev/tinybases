@@ -27,12 +27,6 @@ RUN mkdir -p ${CHROOT}
 RUN debootstrap --arch=amd64 --variant=minbase --no-check-gpg --exclude="     \
         bsdutils               \
         dselect                \
-        debconf                \
-        debconf-i18n           \
-        libtext-charwidth-perl \
-        libtext-iconv-perl     \
-        libtext-wrapi18n-perl  \
-        liblocale-gettext-perl \
         e2fslibs               \
         e2fsprogs              \
         libblkid1              \
@@ -95,10 +89,28 @@ RUN sed -i 's|if \(set -o pipefail\) 2> /dev/null; then|if [ "${BASH_VERSION%%.*
 RUN rm -f ${CHROOT}/usr/bin/tzselect
 
 # Replace bash with dash.
-#RUN echo "dash dash/sh boolean true" | debconf-set-selections
-#RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
-#RUN apt-get update                                                          &&\
-#    echo "Yes, do as I say!" | apt-get remove -y --force-yes bash
+RUN chroot ${CHROOT} sh -c "                                                  \
+    echo 'dash dash/sh boolean true' | debconf-set-selections;                \
+    dpkg-reconfigure dash;                                                    \
+    echo 'Yes, do as I say!' | apt-get remove -y --force-yes bash             \
+"
+
+# Remove `debconf` after replacing `bash` with `dash`.
+RUN chroot ${CHROOT} sh -c "                                                  \
+    apt-get remove -y          \
+        debconf                \
+        debconf-i18n           \
+        liblocale-gettext-perl \
+        libtext-charwidth-perl \
+        libtext-iconv-perl     \
+        libtext-wrapi18n-perl  \
+"
+
+# Remove package leftovers.
+RUN rm -rf ${CHROOT}/var/cache/debconf
+RUN chroot ${CHROOT} sh -c "                                                  \
+    dpkg --list | grep '^rc' | cut -d' ' -f3 | xargs dpkg --purge             \
+"
 
 # Remove bulky files in target unless mandatory.
 RUN rm -rf ${CHROOT}/etc/cron.*
@@ -135,9 +147,10 @@ ENV LC_ALL=POSIX
 ENV TZ=UTC
 
 # Copy rootfs from host.
+ENV ENV="/etc/profile"
 ENV CHROOT="/mnt/chroot"
 COPY --from=host ${CHROOT} /
 
 # Launch shell.
-CMD ["bash"]
+CMD ["sh"]
 ###############################################################################
