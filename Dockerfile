@@ -160,13 +160,9 @@ RUN rm -f ${CHROOT}/usr/bin/tzselect
 RUN chroot ${CHROOT} sh -c "                                                  \
     echo 'dash dash/sh boolean true' | debconf-set-selections;                \
     dpkg-reconfigure dash;                                                    \
-    echo 'Yes, do as I say!' | apt-get remove -y --force-yes bash             \
+    echo 'Yes, do as I say!' | apt-get remove --purge -y --force-yes bash     \
 "
 
-# Remove package leftovers.
-RUN chroot ${CHROOT} sh -c "                                                  \
-    dpkg --list | grep '^rc' | cut -d' ' -f3 | xargs dpkg --purge             \
-"
 # Specific removal for Debian Lenny.
 RUN rm -f ${CHROOT}/usr/bin/oldfind
 
