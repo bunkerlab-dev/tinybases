@@ -95,22 +95,12 @@ RUN chroot ${CHROOT} sh -c "                                                  \
     echo 'Yes, do as I say!' | apt-get remove -y --force-yes bash             \
 "
 
-# Remove `debconf` after replacing `bash` with `dash`.
-RUN chroot ${CHROOT} sh -c "                                                  \
-    apt-get remove -y          \
-        debconf                \
-        debconf-i18n           \
-        liblocale-gettext-perl \
-        libtext-charwidth-perl \
-        libtext-iconv-perl     \
-        libtext-wrapi18n-perl  \
-"
-
 # Remove package leftovers.
-RUN rm -rf ${CHROOT}/var/cache/debconf
 RUN chroot ${CHROOT} sh -c "                                                  \
     dpkg --list | grep '^rc' | cut -d' ' -f3 | xargs dpkg --purge             \
 "
+# Specific removal for Debian Lenny.
+RUN rm -f ${CHROOT}/usr/bin/oldfind
 
 # Remove bulky files in target unless mandatory.
 RUN rm -rf ${CHROOT}/etc/cron.*
