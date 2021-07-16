@@ -121,8 +121,7 @@ RUN case "${VERSION}" in                                                      \
                 ${VERSION} ${CHROOT} ${DEBIAN_ARCHIVE}
 
 # Copy host timezone to target.
-RUN ln -snf ${CHROOT}/usr/share/zoneinfo/$TZ ${CHROOT}/etc/localtime
-RUN echo $TZ > ${CHROOT}/etc/timezone
+RUN echo ${TZ} > ${CHROOT}/etc/timezone
 
 # Copy host certificates to target.
 RUN mkdir -p ${CHROOT}/etc/ssl/certs
