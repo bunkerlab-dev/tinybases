@@ -167,25 +167,34 @@ RUN chroot ${CHROOT} sh -c "                                                  \
 RUN rm -f ${CHROOT}/usr/bin/oldfind
 
 # Remove bulky files in target unless mandatory.
-RUN rm -rf ${CHROOT}/etc/cron.*
-RUN rm -rf ${CHROOT}/etc/logrotate.d
-RUN rm -rf ${CHROOT}/usr/games
-RUN rm -rf ${CHROOT}/usr/local/games
-RUN rm -rf ${CHROOT}/usr/share/emacs
-RUN rm -rf ${CHROOT}/usr/share/vim
-RUN rm -rf ${CHROOT}/var/cache/man
-RUN find ${CHROOT}/usr/share/doc -mindepth 1 -type f                          \
-    -not -name "copyright" -exec rm -rf {} \;
-RUN find ${CHROOT}/usr/share/info -mindepth 1 -maxdepth 1 -exec rm -rf {} \;
-RUN find ${CHROOT}/usr/share/lintian/overrides -type f -exec rm {} \;
-RUN find ${CHROOT}/usr/share/locale -mindepth 1 -maxdepth 1 -exec rm -rf {} \;
-RUN find ${CHROOT}/usr/share/man -mindepth 1 -maxdepth 1 -exec rm -rf {} \;
-RUN find ${CHROOT}/usr/share/zoneinfo -mindepth 1 -maxdepth 1 -not -regex     \
-    ".*/\(GMT\|Greenwich|localtime|posix\|Universal|UTC|Zulu\).*\(\.tab\)?"   \
-    -exec rm -rf {} \;
-RUN find ${CHROOT}/var/cache/apt -type f -exec rm {} \;
-RUN find ${CHROOT}/var/lib/apt/lists -type f -exec rm {} \;
-RUN find ${CHROOT}/var/log -type f -exec rm {} \;
+RUN chroot ${CHROOT} sh -c "                                                  \
+      rm -rf                                                                  \
+        /etc/cron.*                                                           \
+        /etc/logrotate.d                                                      \
+        /usr/games                                                            \
+        /usr/local/games                                                      \
+        /usr/share/emacs                                                      \
+        /usr/share/zoneinfo/*                                                 \
+        /usr/share/vim                                                        \
+        /var/cache/man                                                        \
+    ; find                                                                    \
+        /usr/share/lintian/overrides                                          \
+        /var/cache/apt                                                        \
+        /var/lib/apt/lists                                                    \
+        /var/log                                                              \
+        -type f | xargs rm -f                                                 \
+    ; find                                                                    \
+        /usr/share/info                                                       \
+        /usr/share/locale                                                     \
+        /usr/share/man                                                        \
+        -mindepth 1 -maxdepth 1 | xargs rm -rf                                \
+    ; find                                                                    \
+        /usr/share/doc                                                        \
+        -mindepth 1 -type f -not -name 'copyright' | xargs rm -rf             \
+    ; find                                                                    \
+        /usr/share/doc                                                        \
+        -type d -name 'examples' | xargs rm -rf                               \
+"
 ###############################################################################
 
 
