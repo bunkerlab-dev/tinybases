@@ -162,6 +162,22 @@ RUN chroot ${CHROOT} sh -c "                                                  \
     echo 'Yes, do as I say!' | apt-get remove --purge -y --force-yes bash     \
 "
 
+# Tell dpkg not to install unnecessary stuff.
+RUN chroot ${CHROOT} sh -c "                                                  \
+    mkdir -p /etc/dpkg/dpkg.cfg.d;                                            \
+    {                                                                         \
+    echo '# Remove all docs but the copyright files';                         \
+    echo 'path-exclude /usr/share/doc/*';                                     \
+    echo 'path-include /usr/share/doc/*/copyright';                           \
+    echo 'path-exclude /usr/share/man/*';                                     \
+    echo 'path-exclude /usr/share/groff/*';                                   \
+    echo 'path-exclude /usr/share/info/*';                                    \
+    echo '# Remove lintian files';                                            \
+    echo 'path-exclude /usr/share/lintian/*';                                 \
+    echo 'path-exclude /usr/share/linda/*';                                   \
+    } > /etc/dpkg/dpkg.cfg.d/01_nodoc;                                        \
+"
+
 # Specific removal for Debian Lenny.
 RUN rm -f ${CHROOT}/usr/bin/oldfind
 
