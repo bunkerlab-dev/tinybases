@@ -21,37 +21,104 @@ RUN apt-get update && apt-get install -y ca-certificates && apt-get clean
 RUN apt-get update && apt-get install -y debootstrap xz-utils && apt-get clean
 
 # Prepare target.
-ENV DISTRO=etch
 ENV CHROOT="/mnt/chroot"
 RUN mkdir -p ${CHROOT}
-RUN debootstrap --arch=amd64 --variant=minbase --no-check-gpg --exclude="     \
-        bsdutils               \
-        dselect                \
-        e2fslibs               \
-        e2fsprogs              \
-        libblkid1              \
-        libdevmapper1.02       \
-        mount                  \
-        hostname               \
-        libcap1                \
-        libdb4.3               \
-        libpam0g               \
-        libpam-modules         \
-        libpam-runtime         \
-        libuuid1               \
-        login                  \
-        passwd                 \
-        procps                 \
-        initscripts            \
-        sysvinit               \
-        sysvinit-utils         \
-        libslang2              \
-        util-linux             \
-        libss2                 \
-        lsb-base               \
-        ncurses-base           \
-        ncurses-bin            \
-    " --include="dash" ${DISTRO} ${CHROOT} ${DEBIAN_ARCHIVE}
+
+# Apply debootstrap.
+ARG VERSION
+RUN case "${VERSION}" in                                                      \
+        4|etch)                                                               \
+            VERSION=etch                                                      \
+            EXCLUDE=$(echo "                                                  \
+                bsdutils                                                      \
+                dselect                                                       \
+                e2fslibs                                                      \
+                e2fsprogs                                                     \
+                libblkid1                                                     \
+                libdevmapper1.02                                              \
+                mount                                                         \
+                hostname                                                      \
+                libcap1                                                       \
+                libdb4.3                                                      \
+                libpam0g                                                      \
+                libpam-modules                                                \
+                libpam-runtime                                                \
+                libuuid1                                                      \
+                login                                                         \
+                passwd                                                        \
+                procps                                                        \
+                initscripts                                                   \
+                sysvinit                                                      \
+                libslang2                                                     \
+                util-linux                                                    \
+                libss2                                                        \
+                lsb-base                                                      \
+                ncurses-base                                                  \
+                ncurses-bin                                                   \
+            " | xargs)                                                        \
+        ;;                                                                    \
+        5|lenny)                                                              \
+            VERSION=lenny                                                     \
+            EXCLUDE=$(echo "                                                  \
+                bsdutils                                                      \
+                dselect                                                       \
+                e2fslibs                                                      \
+                e2fsprogs                                                     \
+                libblkid1                                                     \
+                libdevmapper1.02.1                                            \
+                hostname                                                      \
+                libcap1                                                       \
+                libdb4.3                                                      \
+                libpam0g                                                      \
+                libpam-modules                                                \
+                libpam-runtime                                                \
+                libuuid1                                                      \
+                login                                                         \
+                passwd                                                        \
+                procps                                                        \
+                initscripts                                                   \
+                sysvinit                                                      \
+                mount                                                         \
+                libslang2                                                     \
+                util-linux                                                    \
+                libss2                                                        \
+                lsb-base                                                      \
+                ncurses-base                                                  \
+                ncurses-bin                                                   \
+                gcc-4.2-base                                                  \
+            " | xargs)                                                        \
+        ;;                                                                    \
+        6|squeeze)                                                            \
+            VERSION=squeeze                                                   \
+            EXCLUDE=$(echo "                                                  \
+                bsdutils                                                      \
+                dselect                                                       \
+                e2fslibs                                                      \
+                e2fsprogs                                                     \
+                libblkid1                                                     \
+                hostname                                                      \
+                libpam0g                                                      \
+                libpam-modules                                                \
+                libpam-runtime                                                \
+                libuuid1                                                      \
+                login                                                         \
+                passwd                                                        \
+                procps                                                        \
+                initscripts                                                   \
+                sysvinit                                                      \
+                mount                                                         \
+                tzdata                                                        \
+                util-linux                                                    \
+                libss2                                                        \
+                lsb-base                                                      \
+                ncurses-base                                                  \
+                ncurses-bin                                                   \
+            " | xargs)                                                        \
+        ;;                                                                    \
+    esac;                                                                     \
+    debootstrap --arch=amd64 --variant=minbase --no-check-gpg                 \
+                --exclude="${EXCLUDE}" --include="dash"                       \
+                ${VERSION} ${CHROOT} ${DEBIAN_ARCHIVE}
 
 # Copy host timezone to target.
 RUN ln -snf ${CHROOT}/usr/share/zoneinfo/$TZ ${CHROOT}/etc/localtime
@@ -64,7 +131,8 @@ RUN cd ${CHROOT}/etc/ssl && ln -s certs/certSIGN_ROOT_CA.pem cert.pem
 
 # Add backports repository to target.
 RUN chroot ${CHROOT} sh -c "                                                  \
-    echo 'deb ${DEBIAN_ARCHIVE}-backports ${DISTRO}-backports main'           \
+    distro_name=\$(cat /etc/apt/sources.list | head -n1 | cut -d' ' -f3);     \
+    echo \"deb ${DEBIAN_ARCHIVE}-backports \${distro_name}-backports main\"   \
     >> /etc/apt/sources.list                                                  \
 "
 RUN chroot ${CHROOT} sh -c "                                                  \
