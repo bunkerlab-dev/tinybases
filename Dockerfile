@@ -14,11 +14,22 @@ ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime
 RUN echo ${TZ} > /etc/timezone
 
-# Install host certificates.
-RUN apt-get update && apt-get install -y ca-certificates && apt-get clean
-
 # Install debootstrap.
 RUN apt-get update && apt-get install -y debootstrap xz-utils && apt-get clean
+
+# Install host certificates.
+RUN apt-get update && apt-get install -y wget ca-certificates && apt-get clean
+
+# Retrieve a static `wget`.
+RUN wget https://raw.githubusercontent.com/minos-org/minos-static/master/static-get \
+    && chmod +x static-get                                                    \
+    && mkdir -p /opt/wget                                                     \
+    && ./static-get wget                                                      \
+    && tar -xf wget.tar.xz --directory /opt/wget                              \
+    && rm -rf /opt/wget/etc /opt/wget/man                                     \
+    && rm -rf /opt/wget/doc/wget/AUTHORS                                      \
+    && rm -rf /opt/wget/doc/wget/NEWS                                         \
+    && rm wget.tar.xz static-get
 
 # Prepare target.
 ENV CHROOT="/mnt/chroot"
@@ -123,11 +134,6 @@ RUN case "${VERSION}" in                                                      \
 # Copy host timezone to target.
 RUN echo ${TZ} > ${CHROOT}/etc/timezone
 
-# Copy host certificates to target.
-RUN mkdir -p ${CHROOT}/etc/ssl/certs
-RUN cd ${CHROOT}/etc/ssl && cp -rf /etc/ssl/certs/* certs/
-RUN cd ${CHROOT}/etc/ssl && ln -s certs/certSIGN_ROOT_CA.pem cert.pem
-
 # Add backports repository to target.
 RUN chroot ${CHROOT} sh -c "                                                  \
     distro_name=\$(cat /etc/apt/sources.list | head -n1 | cut -d' ' -f3);     \
@@ -162,6 +168,17 @@ RUN chroot ${CHROOT} sh -c "                                                  \
     echo 'Yes, do as I say!' | apt-get remove --purge -y --force-yes bash;    \
     ln -s /bin/dash /bin/bash;                                                \
 "
+
+# Inject host certificates into target.
+RUN mkdir -p ${CHROOT}/etc/ssl/certs
+RUN cp /etc/ssl/certs/ca-certificates.crt ${CHROOT}/etc/ssl/cert.pem
+
+# Inject the static `wget` in the host and configure the CA certificates.
+RUN cp -R /opt/wget ${CHROOT}/opt/wget                                      &&\
+    chroot ${CHROOT} sh -c "                                                  \
+        ln -s /opt/wget/bin/wget /usr/bin/wget;                               \
+        echo 'ca_certificate=/etc/ssl/cert.pem' > /etc/wgetrc;                \
+    "
 
 # Tell dpkg not to install unnecessary stuff.
 RUN chroot ${CHROOT} sh -c "                                                  \
