@@ -10,10 +10,6 @@ ENV LANGUAGE=POSIX
 ENV LC_ALL=POSIX
 ENV TZ=UTC
 
-# Set host timezone.
-RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime
-RUN echo ${TZ} > /etc/timezone
-
 # Install debootstrap.
 RUN apt-get update && apt-get install -y debootstrap xz-utils && apt-get clean
 
