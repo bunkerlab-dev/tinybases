@@ -124,7 +124,7 @@ RUN case "${VERSION}" in                                                      \
         ;;                                                                    \
     esac;                                                                     \
     debootstrap --arch=amd64 --variant=minbase --no-check-gpg                 \
-                --exclude="${EXCLUDE}" --include="dash"                       \
+                --exclude="${EXCLUDE}" --include="dash patch"                 \
                 ${VERSION} ${CHROOT} ${DEBIAN_ARCHIVE}
 
 # Copy host timezone to target.
