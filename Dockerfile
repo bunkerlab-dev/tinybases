@@ -128,6 +128,11 @@ RUN case "${VERSION}" in                                                      \
                 --exclude="${EXCLUDE}" --include="dash patch"                 \
                 ${VERSION} ${CHROOT} ${DEBIAN_ARCHIVE}
 
+# Copy `/etc/profile` from outside and delete root profiles in target.
+COPY files/etc/profile ${CHROOT}/etc/profile
+RUN rm -f ${CHROOT}/root/.profile
+RUN rm -f ${CHROOT}/root/.bashrc
+
 # Copy host timezone to target.
 RUN echo ${TZ} > ${CHROOT}/etc/timezone
 
@@ -140,16 +145,6 @@ RUN chroot ${CHROOT} sh -c "                                                  \
 RUN chroot ${CHROOT} sh -c "                                                  \
     apt-key adv --recv-keys --keyserver keyserver.ubuntu.com EA8E8B2116BA136C \
 "
-
-# Delete root profiles in target.
-RUN rm -f ${CHROOT}/root/.profile
-RUN rm -f ${CHROOT}/root/.bashrc
-
-# Update the dash prompt.
-RUN sed -i "                                                                  \
-        s|PS1='# '|PS1=\"[root@\$HOSTNAME \$PWD]# \"|;                        \
-        s|PS1='\$ '|PS1=\"[\$USER@\$HOSTNAME \$PWD]\$ \"|;                    \
-    " ${CHROOT}/etc/profile
 
 # Fix `ldd` to be dash-compliant.
 RUN sed -i 's|$"|"|; s|#! /bin/bash|#! /bin/sh|' ${CHROOT}/usr/bin/ldd
