@@ -25,7 +25,8 @@ RUN wget https://raw.githubusercontent.com/minos-org/minos-static/master/static-
     && rm -rf /opt/wget/etc /opt/wget/man                                     \
     && rm -rf /opt/wget/doc/wget/AUTHORS                                      \
     && rm -rf /opt/wget/doc/wget/NEWS                                         \
-    && rm wget.tar.xz static-get
+    && rm wget.tar.xz                                                         \
+    && rm static-get
 
 # Prepare target.
 ENV CHROOT="/mnt/chroot"
