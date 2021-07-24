@@ -1,6 +1,7 @@
 # Host Docker image.
 ###############################################################################
-FROM debian:buster-slim AS host
+ARG ARCH
+FROM ${ARCH}/debian:buster-slim AS host
 
 # Set environment variables.
 ENV DEBIAN_ARCHIVE=http://archive.debian.org/debian
@@ -33,6 +34,7 @@ ENV CHROOT="/mnt/chroot"
 RUN mkdir -p ${CHROOT}
 
 # Apply debootstrap.
+ARG ARCH
 ARG VERSION
 RUN case "${VERSION}" in                                                      \
         4|etch)                                                               \
@@ -124,7 +126,7 @@ RUN case "${VERSION}" in                                                      \
             " | xargs)                                                        \
         ;;                                                                    \
     esac;                                                                     \
-    debootstrap --arch=amd64 --variant=minbase --no-check-gpg                 \
+    debootstrap --arch=${ARCH} --variant=minbase --no-check-gpg               \
                 --exclude="${EXCLUDE}" --include="dash patch"                 \
                 ${VERSION} ${CHROOT} ${DEBIAN_ARCHIVE}
 
