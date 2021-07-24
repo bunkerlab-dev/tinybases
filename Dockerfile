@@ -191,37 +191,44 @@ RUN cp -R /opt/wget ${CHROOT}/opt/wget                                      &&\
         echo 'ca_certificate=/etc/ssl/cert.pem' > /etc/wgetrc;                \
     "
 
-# Specific removal for Debian Lenny.
-RUN rm -f ${CHROOT}/usr/bin/oldfind
-
 # Remove bulky files in target unless mandatory.
 RUN chroot ${CHROOT} sh -c "                                                  \
       rm -rf                                                                  \
         /etc/cron.*                                                           \
         /etc/logrotate.d                                                      \
-        /usr/games                                                            \
-        /usr/local/games                                                      \
         /usr/share/emacs                                                      \
         /usr/share/info/*                                                     \
         /usr/share/groff/*                                                    \
         /usr/share/linda/*                                                    \
         /usr/share/lintian/*                                                  \
-        /usr/share/locale/*                                                   \
-        /usr/share/man/*                                                      \
         /usr/share/vim                                                        \
         /usr/share/zoneinfo/*                                                 \
-        /var/cache/man                                                        \
     ; find                                                                    \
         /var/cache/apt                                                        \
         /var/lib/apt/lists                                                    \
         /var/log                                                              \
         -type f | xargs rm -f                                                 \
+    # Clean locales.
+    ; find                                                                    \
+        /usr/share/locale                                                     \
+        -mindepth 3 -maxdepth 3 | xargs rm -rf                                \
+    # Remove docs and manpages if any.
     ; find                                                                    \
         /usr/share/doc                                                        \
         -mindepth 1 -type f -not -name 'copyright' | xargs rm -rf             \
     ; find                                                                    \
         /usr/share/doc                                                        \
         -empty | xargs rm -rf                                                 \
+    ; find                                                                    \
+        /usr/share/man                                                        \
+        -mindepth 2 -maxdepth 2 | xargs rm -rf                                \
+    ; rm -rf /var/cache/man                                                   \
+    # Remove games folders.
+    ; rm -rf                                                                  \
+        /usr/games                                                            \
+        /usr/local/games                                                      \
+    # Specific removal for Debian Lenny.
+    ; rm -rf /usr/bin/oldfind                                                 \
 "
 ###############################################################################
 
