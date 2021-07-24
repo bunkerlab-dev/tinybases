@@ -138,11 +138,33 @@ RUN rm -f ${CHROOT}/root/.bashrc
 # Copy host timezone to target.
 RUN echo ${TZ} > ${CHROOT}/etc/timezone
 
+# Add special (insecure) configuration for `apt`.
+RUN chroot ${CHROOT} sh -c "                                                  \
+    echo 'APT::Get::AllowUnauthenticated \"true\";'                           \
+        > /etc/apt/apt.conf.d/docker_noauth                                   \
+"
+
+# Tell dpkg not to install unnecessary stuff.
+RUN chroot ${CHROOT} sh -c "                                                  \
+    mkdir -p /etc/dpkg/dpkg.cfg.d;                                            \
+    {                                                                         \
+    echo '# Remove all docs but the copyright files';                         \
+    echo 'path-exclude /usr/share/doc/*';                                     \
+    echo 'path-include /usr/share/doc/*/copyright';                           \
+    echo 'path-exclude /usr/share/man/*';                                     \
+    echo 'path-exclude /usr/share/groff/*';                                   \
+    echo 'path-exclude /usr/share/info/*';                                    \
+    echo '# Remove lintian files';                                            \
+    echo 'path-exclude /usr/share/lintian/*';                                 \
+    echo 'path-exclude /usr/share/linda/*';                                   \
+    } > /etc/dpkg/dpkg.cfg.d/docker_nodoc;                                    \
+"
+
 # Add backports repository to target.
 RUN chroot ${CHROOT} sh -c "                                                  \
     distro_name=\$(cat /etc/apt/sources.list | head -n1 | cut -d' ' -f3);     \
     echo \"deb ${DEBIAN_ARCHIVE}-backports \${distro_name}-backports main\"   \
-    >> /etc/apt/sources.list                                                  \
+        >> /etc/apt/sources.list                                              \
 "
 RUN chroot ${CHROOT} sh -c "                                                  \
     apt-key adv --recv-keys --keyserver keyserver.ubuntu.com EA8E8B2116BA136C \
@@ -168,22 +190,6 @@ RUN cp -R /opt/wget ${CHROOT}/opt/wget                                      &&\
         ln -s /opt/wget/bin/wget /usr/bin/wget;                               \
         echo 'ca_certificate=/etc/ssl/cert.pem' > /etc/wgetrc;                \
     "
-
-# Tell dpkg not to install unnecessary stuff.
-RUN chroot ${CHROOT} sh -c "                                                  \
-    mkdir -p /etc/dpkg/dpkg.cfg.d;                                            \
-    {                                                                         \
-    echo '# Remove all docs but the copyright files';                         \
-    echo 'path-exclude /usr/share/doc/*';                                     \
-    echo 'path-include /usr/share/doc/*/copyright';                           \
-    echo 'path-exclude /usr/share/man/*';                                     \
-    echo 'path-exclude /usr/share/groff/*';                                   \
-    echo 'path-exclude /usr/share/info/*';                                    \
-    echo '# Remove lintian files';                                            \
-    echo 'path-exclude /usr/share/lintian/*';                                 \
-    echo 'path-exclude /usr/share/linda/*';                                   \
-    } > /etc/dpkg/dpkg.cfg.d/01_nodoc;                                        \
-"
 
 # Specific removal for Debian Lenny.
 RUN rm -f ${CHROOT}/usr/bin/oldfind
