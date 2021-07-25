@@ -213,7 +213,7 @@ RUN chroot ${CHROOT} sh -c "                                                  \
 
 # Target Docker image.
 ###############################################################################
-FROM --platform=${TARGETPLATFORM} scratch AS debian-lean
+FROM --platform=${TARGETPLATFORM} scratch AS tinybases-debian
 
 # Set environment variables.
 ENV DEBIAN_FRONTEND=noninteractive

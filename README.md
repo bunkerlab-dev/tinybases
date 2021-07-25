@@ -1,4 +1,4 @@
-# docker-debian-lean
+# tinybases-debian
 
 This `Dockerfile` generates light versions of the Debian images for use
 in Docker containers. The cleanup process is done by removing unneeded
