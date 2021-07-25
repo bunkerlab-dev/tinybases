@@ -204,7 +204,7 @@ RUN chroot ${CHROOT} sh -c "                                                  \
         -type f | xargs rm -f                                                 \
     ; find / -regex '.*~$' | xargs rm -rf                                     \
     # Clean docs, lintian files, locales and manpages.
-    ; sh /etc/apt/apt.conf.d/99docker_dpkg_postinvoke.sh                      \
+    ; sh /etc/apt/apt.conf.d.scripts/99docker_dpkg_postinvoke.sh              \
     # Specific removal for Debian Lenny.
     ; rm -rf /usr/bin/oldfind                                                 \
 "
