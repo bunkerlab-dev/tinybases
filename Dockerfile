@@ -1,7 +1,7 @@
 # Host Docker image.
 ###############################################################################
 ARG ARCH
-FROM ${ARCH}/debian:buster-slim AS host
+FROM --platform=${TARGETPLATFORM} ${ARCH}/debian:buster-slim AS host
 
 # Set environment variables.
 ENV DEBIAN_ARCHIVE=http://archive.debian.org/debian
@@ -235,7 +235,7 @@ RUN chroot ${CHROOT} sh -c "                                                  \
 
 # Target Docker image.
 ###############################################################################
-FROM scratch AS debian-lean
+FROM --platform=${TARGETPLATFORM} scratch AS debian-lean
 
 # Set environment variables.
 ENV DEBIAN_FRONTEND=noninteractive
