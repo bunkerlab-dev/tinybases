@@ -129,7 +129,6 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 initscripts                                                   \
                 sysvinit                                                      \
                 mount                                                         \
-                tzdata                                                        \
                 util-linux                                                    \
                 libss2                                                        \
                 lsb-base                                                      \
