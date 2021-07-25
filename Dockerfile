@@ -138,27 +138,8 @@ RUN rm -f ${CHROOT}/root/.bashrc
 # Copy host timezone to target.
 RUN echo ${TZ} > ${CHROOT}/etc/timezone
 
-# Add special (insecure) configuration for `apt`.
-RUN chroot ${CHROOT} sh -c "                                                  \
-    echo 'APT::Get::AllowUnauthenticated \"true\";'                           \
-        > /etc/apt/apt.conf.d/docker_noauth                                   \
-"
-
-# Tell dpkg not to install unnecessary stuff.
-RUN chroot ${CHROOT} sh -c "                                                  \
-    mkdir -p /etc/dpkg/dpkg.cfg.d;                                            \
-    {                                                                         \
-    echo '# Remove all docs but the copyright files';                         \
-    echo 'path-exclude /usr/share/doc/*';                                     \
-    echo 'path-include /usr/share/doc/*/copyright';                           \
-    echo 'path-exclude /usr/share/man/*';                                     \
-    echo 'path-exclude /usr/share/groff/*';                                   \
-    echo 'path-exclude /usr/share/info/*';                                    \
-    echo '# Remove lintian files';                                            \
-    echo 'path-exclude /usr/share/lintian/*';                                 \
-    echo 'path-exclude /usr/share/linda/*';                                   \
-    } > /etc/dpkg/dpkg.cfg.d/docker_nodoc;                                    \
-"
+# Add special configuration for `apt`.
+COPY files/etc/apt ${CHROOT}/etc/apt
 
 # Add backports repository to target.
 RUN chroot ${CHROOT} sh -c "                                                  \
@@ -185,45 +166,34 @@ RUN mkdir -p ${CHROOT}/etc/ssl/certs
 RUN cp /etc/ssl/certs/ca-certificates.crt ${CHROOT}/etc/ssl/cert.pem
 
 # Inject the static `wget` in the host and configure the CA certificates.
-RUN cp -R /opt/wget ${CHROOT}/opt/wget                                      &&\
-    chroot ${CHROOT} sh -c "                                                  \
+RUN cp -R /opt/wget ${CHROOT}/opt/wget                                        \
+    && chroot ${CHROOT} sh -c "                                               \
         ln -s /opt/wget/bin/wget /usr/bin/wget;                               \
         echo 'ca_certificate=/etc/ssl/cert.pem' > /etc/wgetrc;                \
     "
 
 # Remove bulky files in target unless mandatory.
 RUN chroot ${CHROOT} sh -c "                                                  \
+    # Remove unused folders.
       rm -rf                                                                  \
         /etc/cron.*                                                           \
         /etc/logrotate.d                                                      \
         /usr/share/emacs                                                      \
-        /usr/share/info/*                                                     \
-        /usr/share/groff/*                                                    \
-        /usr/share/linda/*                                                    \
-        /usr/share/lintian/*                                                  \
         /usr/share/vim                                                        \
         /usr/share/zoneinfo/*                                                 \
+    # Remove games folders.
+    ; rm -rf                                                                  \
+        /usr/games                                                            \
+        /usr/local/games                                                      \
+    # Remove apt cache and logs.
     ; find                                                                    \
         /var/cache/apt                                                        \
         /var/lib/apt/lists                                                    \
         /var/log                                                              \
         -type f | xargs rm -f                                                 \
-    # Clean docs.
-    ; find                                                                    \
-        /usr/share/doc                                                        \
-        -mindepth 1 -type f -not -name 'copyright' | xargs rm -rf             \
-    ; find                                                                    \
-        /usr/share/doc                                                        \
-        -empty | xargs rm -rf                                                 \
-    # Clean locales and manpages.
-    ; rm -rf                                                                  \
-        /usr/share/locale/*                                                   \
-        /usr/share/man/*                                                      \
-        /var/cache/man                                                        \
-    # Remove games folders.
-    ; rm -rf                                                                  \
-        /usr/games                                                            \
-        /usr/local/games                                                      \
+    ; find / -regex '.*~$' | xargs rm -rf                                     \
+    # Clean docs, lintian files, locales and manpages.
+    ; sh /etc/apt/apt.conf.d/99docker_dpkg_postinvoke.sh                      \
     # Specific removal for Debian Lenny.
     ; rm -rf /usr/bin/oldfind                                                 \
 "

@@ -1,0 +1,3 @@
+DPkg::Pre-Invoke {
+    "sh /etc/apt/apt.conf.d/00docker_dpkg_preinvoke.sh";
+}
