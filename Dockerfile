@@ -180,7 +180,7 @@ RUN cp /etc/ssl/certs/ca-certificates.crt ${CHROOT}/etc/ssl/cert.pem
 # Inject the static `wget` in the host and configure the CA certificates.
 RUN cp -R /opt/wget ${CHROOT}/opt/wget                                        \
     && chroot ${CHROOT} sh -c "                                               \
-        ln -s /opt/wget/bin/wget /usr/bin/wget;                               \
+        ln -s /opt/wget/bin/wget /usr/local/bin/wget;                         \
         echo 'ca_certificate=/etc/ssl/cert.pem' > /etc/wgetrc;                \
     "
 
