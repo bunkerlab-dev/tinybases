@@ -1,7 +1,6 @@
 # Host Docker image.
 ###############################################################################
-ARG ARCH
-FROM --platform=${TARGETPLATFORM} ${ARCH}/debian:buster-slim AS host
+FROM --platform=${TARGETPLATFORM} debian:buster-slim AS host
 
 # Set environment variables.
 ENV DEBIAN_ARCHIVE=http://archive.debian.org/debian
@@ -36,7 +35,20 @@ RUN mkdir -p ${CHROOT}
 # Apply debootstrap.
 ARG ARCH
 ARG VERSION
-RUN case "${VERSION}" in                                                      \
+ARG TARGETPLATFORM
+RUN case "${TARGETPLATFORM}" in                                               \
+        linux/386)                                                            \
+            ARCH=i386                                                         \
+        ;;                                                                    \
+        linux/amd64)                                                          \
+            ARCH=amd64                                                        \
+        ;;                                                                    \
+        *)                                                                    \
+            echo "E: unsupported target platform: ${TARGETPLATFORM}"          \
+            exit 1                                                            \
+        ;;                                                                    \
+    esac;                                                                     \
+    case "${VERSION}" in                                                      \
         4|etch)                                                               \
             VERSION=etch                                                      \
             EXCLUDE=$(echo "                                                  \

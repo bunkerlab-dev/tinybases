@@ -8,44 +8,12 @@ build:
 	        make build version="$$v" arch="$$arch";                       \
 	    done                                                              \
 	else                                                                  \
-	    if [ "$(arch)" = "" ]; then                                       \
-	        arch=amd64;                                                   \
-	        archtag=;                                                     \
-	        platform=linux/amd64;                                         \
-	    elif [ "$(arch)" = "amd64" ]; then                                \
-	        arch=amd64;                                                   \
-	        archtag=-amd64;                                               \
-	        platform=linux/amd64;                                         \
-	    elif [ "$(arch)" = "i386" ]; then                                 \
-	        arch=i386;                                                    \
-	        archtag=-i386;                                                \
-	        platform=linux/386;                                           \
-	    else                                                              \
-	        echo "E: invalid architecture: $(arch)";                      \
-	        exit 1;                                                       \
-	    fi;                                                               \
-	    tag="debian-lean:$$version$$archtag";                             \
+	    tag="tinybases/debian:$$version";                                 \
 	    echo "Building $$tag...";                                         \
+	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
-	        --platform=$$platform                                         \
+	        --push                                                        \
+	        --platform=linux/amd64,linux/386                              \
 	        --tag "$$tag"                                                 \
-	        --build-arg VERSION="$(version)"                              \
-	        --build-arg ARCH="$$arch";                                    \
-	fi
-
-
-publish:
-
-	@if [ "$(version)" = "all" -o "$(version)" = "" ]; then               \
-	    for v in $(ALL); do                                               \
-	        make publish version="$$v";                                   \
-	    done;                                                             \
-	else                                                                  \
-	    user=tinybases;                                                   \
-	    tag="debian-lean:$$version";                                      \
-	    tagid=$$(docker images -q $$tag);                                 \
-	    repotag=$$user/debian:$$version;                                  \
-	    echo "Publishing $$repotag ($$tagid)...";                         \
-	    docker tag "$$tagid" "$$repotag";                                 \
-	    docker push "$$repotag";                                          \
+	        --build-arg VERSION="$(version)";                             \
 	fi
