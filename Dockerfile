@@ -208,21 +208,18 @@ RUN chroot ${CHROOT} sh -c "                                                  \
         /var/lib/apt/lists                                                    \
         /var/log                                                              \
         -type f | xargs rm -f                                                 \
-    # Clean locales.
-    ; find                                                                    \
-        /usr/share/locale                                                     \
-        -mindepth 3 -maxdepth 3 | xargs rm -rf                                \
-    # Remove docs and manpages if any.
+    # Clean docs.
     ; find                                                                    \
         /usr/share/doc                                                        \
         -mindepth 1 -type f -not -name 'copyright' | xargs rm -rf             \
     ; find                                                                    \
         /usr/share/doc                                                        \
         -empty | xargs rm -rf                                                 \
-    ; find                                                                    \
-        /usr/share/man                                                        \
-        -mindepth 2 -maxdepth 2 | xargs rm -rf                                \
-    ; rm -rf /var/cache/man                                                   \
+    # Clean locales and manpages.
+    ; rm -rf                                                                  \
+        /usr/share/locale/*                                                   \
+        /usr/share/man/*                                                      \
+        /var/cache/man                                                        \
     # Remove games folders.
     ; rm -rf                                                                  \
         /usr/games                                                            \
