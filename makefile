@@ -6,7 +6,7 @@ build-debian:
 
 	@if [ "$(version)" = "all" -o "$(version)" = "" ]; then               \
 	    for v in $(ALL_DEBIAN_VERSIONS); do                               \
-	        make build version="$$v";                                     \
+	        make build-debian version="$$v";                              \
 	    done                                                              \
 	else                                                                  \
 	    tag="tinybases/debian:$$version";                                 \
