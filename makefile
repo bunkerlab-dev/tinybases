@@ -2,7 +2,7 @@ ALL_DEBIAN_VERSIONS = $(shell echo "4 5 6")
 ALL_PYTHON_VERSIONS = $(shell echo "2.6 2.7 3.2 3.3 3.4 3.5 3.6 3.7 3.8 3.9")
 
 
-build:
+build-debian:
 
 	@if [ "$(version)" = "all" -o "$(version)" = "" ]; then               \
 	    for v in $(ALL_DEBIAN_VERSIONS); do                               \
@@ -14,7 +14,7 @@ build:
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
 	        --push                                                        \
-	        --file Dockerfile                                             \
+	        --file Dockerfile.debian                                      \
 	        --platform=linux/amd64,linux/386                              \
 	        --tag "$$tag"                                                 \
 	        --build-arg VERSION="$(version)";                             \
