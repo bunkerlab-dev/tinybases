@@ -5,7 +5,7 @@ build:
 
 	@if [ "$(version)" = "all" -o "$(version)" = "" ]; then               \
 	    for v in $(ALL); do                                               \
-	        make build version="$$v" arch="$$arch";                       \
+	        make build version="$$v";                                     \
 	    done                                                              \
 	else                                                                  \
 	    tag="tinybases/debian:$$version";                                 \
