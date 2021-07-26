@@ -1,7 +1,8 @@
 FROM tinybases/debian:5 AS tinybases-python
 
 ARG VERSION
-RUN wget https://github.com/molinav/poorman-manager/archive/refs/heads/master.tar.gz \
+RUN cd /home                                                                  \
+    && wget https://github.com/molinav/poorman-manager/archive/refs/heads/master.tar.gz \
     && tar -xf master.tar.gz --strip 1                                        \
     && cd src                                                                 \
     && chmod +x manager                                                       \
