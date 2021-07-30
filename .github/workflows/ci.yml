@@ -38,6 +38,7 @@ jobs:
           make build-debian version=${{ matrix.debian_version }}
 
   build-python:
+    needs: build-debian
     runs-on: ubuntu-latest
     strategy:
       matrix:
