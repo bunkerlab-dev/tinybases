@@ -5,11 +5,11 @@ RUN cd /home                                                                  \
     && wget https://github.com/molinav/poorman-manager/archive/refs/heads/master.tar.gz \
     && tar -xf master.tar.gz --strip 1                                        \
     && rm -f master.tar.gz                                                    \
-    && cd src                                                                 \
-    && chmod +x manager                                                       \
-    && ./manager install gcc-full pyenv-dev pyenv                             \
-    && ./manager install python-${VERSION}                                    \
-    && ./manager remove pyenv-dev gcc-full                                    \
+    && cd bin                                                                 \
+    && chmod +x pmm                                                           \
+    && ./pmm install gcc-full pyenv-dev pyenv                                 \
+    && ./pmm install python-${VERSION}                                        \
+    && ./pmm remove pyenv-dev gcc-full                                        \
     && cd ..                                                                  \
     && rm -rf src
 
