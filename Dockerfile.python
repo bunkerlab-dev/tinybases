@@ -7,9 +7,11 @@ RUN cd /home                                                                  \
     && rm -f master.tar.gz                                                    \
     && cd bin                                                                 \
     && chmod +x pmm                                                           \
+    && ./pmm install aptitude                                                 \
     && ./pmm install gcc-full pyenv-dev pyenv                                 \
     && ./pmm install python-${VERSION}                                        \
     && ./pmm remove pyenv-dev gcc-full                                        \
+    && ./pmm remove aptitude                                                  \
     && cd ..                                                                  \
     && rm -rf src
 
