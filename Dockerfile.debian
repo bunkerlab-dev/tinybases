@@ -51,6 +51,10 @@ RUN case "${TARGETPLATFORM}" in                                               \
     case "${VERSION}" in                                                      \
         4|etch)                                                               \
             VERSION=etch                                                      \
+            INCLUDE=$(echo "                                                  \
+                dash                                                          \
+                patch                                                         \
+            ")                                                                \
             EXCLUDE=$(echo "                                                  \
                 bsdutils                                                      \
                 dselect                                                       \
@@ -81,6 +85,10 @@ RUN case "${TARGETPLATFORM}" in                                               \
         ;;                                                                    \
         5|lenny)                                                              \
             VERSION=lenny                                                     \
+            INCLUDE=$(echo "                                                  \
+                dash                                                          \
+                patch                                                         \
+            ")                                                                \
             EXCLUDE=$(echo "                                                  \
                 bsdutils                                                      \
                 dselect                                                       \
@@ -112,6 +120,10 @@ RUN case "${TARGETPLATFORM}" in                                               \
         ;;                                                                    \
         6|squeeze)                                                            \
             VERSION=squeeze                                                   \
+            INCLUDE=$(echo "                                                  \
+                dash                                                          \
+                patch                                                         \
+            ")                                                                \
             EXCLUDE=$(echo "                                                  \
                 bsdutils                                                      \
                 dselect                                                       \
@@ -138,7 +150,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
         ;;                                                                    \
     esac;                                                                     \
     debootstrap --arch=${ARCH} --variant=minbase --no-check-gpg               \
-                --exclude="${EXCLUDE}" --include="dash patch"                 \
+                --exclude="${EXCLUDE}" --include="${INCLUDE}"                 \
                 ${VERSION} ${CHROOT} ${DEBIAN_ARCHIVE}
 
 # Copy `/etc/profile` from outside and delete root profiles in target.
