@@ -49,6 +49,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        debian_version:
+          [
+            "4",
+            "5",
+          ]
         python_version:
           [
             "2.6",
@@ -93,4 +98,6 @@ jobs:
       -
         name: Build Debian 5 with Python
         run: |
-          make build-python base=debian:5 version=${{ matrix.python_version }}
+          make build-python                                                   \
+            base=debian:${{ matrix.debian_version }}                          \
+            version=${{ matrix.python_version }}
