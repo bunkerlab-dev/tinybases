@@ -1,4 +1,5 @@
-FROM tinybases/debian:5 AS tinybases-python
+ARG BASE
+FROM tinybases/${BASE} AS tinybases-python
 
 ARG VERSION
 RUN cd /home                                                                  \

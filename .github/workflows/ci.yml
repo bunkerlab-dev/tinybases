@@ -93,4 +93,4 @@ jobs:
       -
         name: Build Debian 5 with Python
         run: |
-          make build-python version=${{ matrix.python_version }}
+          make build-python base=debian:5 version=${{ matrix.python_version }}

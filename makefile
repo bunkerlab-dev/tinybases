@@ -25,12 +25,17 @@ build-debian:
 
 build-python:
 
-	@if [ "$(version)" = "all" -o "$(version)" = "" ]; then               \
+	@if [ "$(base)" = "all" -o "$(base)" = "" ]; then                     \
+	    for v in $(ALL_DEBIAN_VERSIONS); do                               \
+	        make build-python base="debian:$$v" version="$(version)";     \
+	    done                                                              \
+	elif [ "$(version)" = "all" -o "$(version)" = "" ]; then              \
 	    for v in $(ALL_PYTHON_VERSIONS); do                               \
-	        make build-python version="$$v";                              \
+	        make build-python base="$(base)" version="$$v";               \
 	    done                                                              \
 	else                                                                  \
-	    tag="tinybases/python:$$version-debian-5";                        \
+	    org="tinybases";                                                  \
+	    tag="$$org/python:$$version-$(shell echo $(base) | tr ':' '-')";  \
 	    echo "Building $$tag...";                                         \
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
@@ -38,5 +43,6 @@ build-python:
 	        --file Dockerfile.python                                      \
 	        --platform=linux/amd64,linux/386                              \
 	        --tag "$$tag"                                                 \
+	        --build-arg BASE="$(base)"                                    \
 	        --build-arg VERSION="$(version)";                             \
 	fi
