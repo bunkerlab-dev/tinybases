@@ -3,9 +3,12 @@ FROM tinybases/${BASE} AS tinybases-python
 
 ARG VERSION
 RUN cd /home                                                                  \
-    && wget https://github.com/molinav/poorman-manager/archive/refs/heads/master.tar.gz \
-    && tar -xf master.tar.gz --strip 1                                        \
-    && rm -f master.tar.gz                                                    \
+    && pmm_remote=https://github.com/molinav/poorman-manager/archive/refs     \
+    && pmm_remote_pointer=tags                                                \
+    && pmm_remote_version=v0.2.0                                              \
+    && wget ${pmm_remote}/${pmm_remote_pointer}/${pmm_remote_version}.tar.gz  \
+    && tar -xf ${pmm_remote_version}.tar.gz --strip 1                         \
+    && rm -f ${pmm_remote_version}.tar.gz                                     \
     && cd bin                                                                 \
     && chmod +x pmm                                                           \
     && ./pmm install aptitude                                                 \
@@ -14,6 +17,6 @@ RUN cd /home                                                                  \
     && ./pmm remove pyenv-dev gcc-full                                        \
     && ./pmm remove aptitude                                                  \
     && cd ..                                                                  \
-    && rm -rf src
+    && rm -rf ./*
 
 CMD ["sh"]
