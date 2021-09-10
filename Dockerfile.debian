@@ -176,7 +176,7 @@ RUN chroot ${CHROOT} sh -c "                                                  \
 
 # Fix `ldd` to be dash-compliant.
 RUN sed -i 's|$"|"|; s|#! /bin/bash|#! /bin/sh|' ${CHROOT}/usr/bin/ldd
-RUN sed -i 's|if \(set -o pipefail\) 2> /dev/null; then|if [ "${BASH_VERSION%%.*}" -ge 3 ]; then \1|' ${CHROOT}/usr/bin/ldd
+RUN sed -i 's|if \(set -o pipefail 2> /dev/null; then\)|if [ ! -z "${BASH_VERSION%%.*}" ] \&\& [ "${BASH_VERSION%%.*}" -ge 3 ] \&\& \1|' ${CHROOT}/usr/bin/ldd
 
 # Replace bash with dash (cheat the system with a symlink if needed).
 RUN chroot ${CHROOT} sh -c "                                                  \
