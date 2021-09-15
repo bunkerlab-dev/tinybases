@@ -4,8 +4,8 @@ FROM tinybases/${BASE} AS tinybases-python
 ARG VERSION
 RUN cd /home                                                                  \
     && pmm_remote=https://github.com/molinav/poorman-manager/archive/refs     \
-    && pmm_remote_pointer=tags                                                \
-    && pmm_remote_version=v0.2.0                                              \
+    && pmm_remote_pointer=heads                                               \
+    && pmm_remote_version=master                                              \
     && wget ${pmm_remote}/${pmm_remote_pointer}/${pmm_remote_version}.tar.gz  \
     && tar -xf ${pmm_remote_version}.tar.gz --strip 1                         \
     && rm -f ${pmm_remote_version}.tar.gz                                     \
