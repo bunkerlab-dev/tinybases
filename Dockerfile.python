@@ -11,11 +11,11 @@ RUN cd /home                                                                  \
     && rm -f ${pmm_remote_version}.tar.gz                                     \
     && cd bin                                                                 \
     && chmod +x pmm                                                           \
-    && ./pmm install aptitude                                                 \
+    && if [ "${BASE}" = "debian:4" ]; then ./pmm install aptitude; fi         \
     && ./pmm install gcc-full pyenv-dev pyenv                                 \
     && ./pmm install python-${VERSION}                                        \
     && ./pmm remove pyenv-dev gcc-full                                        \
-    && ./pmm remove aptitude                                                  \
+    && if [ "${BASE}" = "debian:4" ]; then ./pmm remove aptitude; fi          \
     && cd ..                                                                  \
     && rm -rf ./*
 
