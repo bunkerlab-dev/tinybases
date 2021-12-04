@@ -36,21 +36,32 @@ build-python:
 
 	@if [ "$(base)" = "all" -o "$(base)" = "" ]; then                     \
 	    for v in $(ALL_DEBIAN_VERSIONS); do                               \
-	        make build-python base="debian:$$v" version="$(version)";     \
+	        make build-python base="debian:$$v" version="$(version)"      \
+	                          platform="$(platform)";                     \
 	    done                                                              \
 	elif [ "$(version)" = "all" -o "$(version)" = "" ]; then              \
 	    for v in $(ALL_PYTHON_VERSIONS); do                               \
-	        make build-python base="$(base)" version="$$v";               \
+	        make build-python base="$(base)" version="$$v"                \
+	                          platform="$(platform)";                     \
 	    done                                                              \
 	else                                                                  \
-	    org="tinybases";                                                  \
-	    tag="$$org/python:$$version-$(shell echo $(base) | tr ':' '-')";  \
+	    base_hyphenised="$(shell echo $(base) | tr ':' '-')";             \
+	    if [ "$(platform)" = "all" -o "$(platform)" = "" ]; then          \
+	        plat="linux/amd64,linux/386";                                 \
+	        tag="tinybases/python:$$version-$$base_hyphenised";           \
+	    elif [ "$(platform)" = "amd64" ]; then                            \
+	        plat="linux/amd64";                                           \
+	        tag="tinybases/amd64-python:$$version-$$base_hyphenised";     \
+	    elif [ "$(platform)" = "i386" ]; then                             \
+	        plat="linux/386";                                             \
+	        tag="tinybases/i386-python:$$version-$$base_hyphenised";      \
+	    fi;                                                               \
 	    echo "Building $$tag...";                                         \
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
 	        --push                                                        \
 	        --file Dockerfile.python                                      \
-	        --platform=linux/amd64,linux/386                              \
+	        --platform="$$plat"                                           \
 	        --tag "$$tag"                                                 \
 	        --build-arg BASE="$(base)"                                    \
 	        --build-arg VERSION="$(version)";                             \
