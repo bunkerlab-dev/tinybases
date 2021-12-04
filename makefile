@@ -48,13 +48,13 @@ build-python:
 	    base_hyphenised="$(shell echo $(base) | tr ':' '-')";             \
 	    if [ "$(platform)" = "multiarch" -o "$(platform)" = "" ]; then    \
 	        plat="linux/amd64,linux/386";                                 \
-	        tag="tinybases/python:$$version-$$base_hyphenised";           \
+	        tag="pylegacy/python:$$version-$$base_hyphenised";            \
 	    elif [ "$(platform)" = "amd64" ]; then                            \
 	        plat="linux/amd64";                                           \
-	        tag="tinybases/amd64-python:$$version-$$base_hyphenised";     \
+	        tag="pylegacy/amd64-python:$$version-$$base_hyphenised";      \
 	    elif [ "$(platform)" = "i386" ]; then                             \
 	        plat="linux/386";                                             \
-	        tag="tinybases/i386-python:$$version-$$base_hyphenised";      \
+	        tag="pylegacy/i386-python:$$version-$$base_hyphenised";       \
 	    fi;                                                               \
 	    echo "Building $$tag...";                                         \
 	    docker buildx create --use;                                       \
