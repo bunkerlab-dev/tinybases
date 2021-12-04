@@ -1,0 +1,202 @@
+name: ci-i386
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+
+  build-debian:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        debian_version:
+          [
+            "4",
+            "5",
+            "6",
+          ]
+      max-parallel: 1
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        id: buildx
+      -
+        name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build Debian
+        run: |
+          make build-debian platform=i386                                     \
+                            version=${{ matrix.debian_version }}
+
+  build-python-debian-4:
+    needs: build-debian
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version:
+          [
+            "2.6",
+            "2.6-ucs2",
+            "2.7",
+            "2.7-ucs2",
+            "3.1",
+            "3.1-ucs2",
+            "3.2",
+            "3.2-ucs2",
+            "3.3",
+            "3.4",
+            "3.5",
+            "3.6",
+            "3.7",
+            "3.8",
+            "3.9",
+          ]
+      max-parallel: 1
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build Debian 4 with Python
+        run: |
+          make build-python base=debian:4 platform=i386                       \
+                            version=${{ matrix.python_version }}
+
+  build-python-debian-5:
+    needs: build-python-debian-4
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version:
+          [
+            "2.6",
+            "2.6-ucs2",
+            "2.7",
+            "2.7-ucs2",
+            "3.1",
+            "3.1-ucs2",
+            "3.2",
+            "3.2-ucs2",
+            "3.3",
+            "3.4",
+            "3.5",
+            "3.6",
+            "3.7",
+            "3.8",
+            "3.9",
+          ]
+      max-parallel: 1
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build Debian 5 with Python
+        run: |
+          make build-python base=debian:5 platform=i386                       \
+                            version=${{ matrix.python_version }}
+
+  build-python-debian-6:
+    needs: build-python-debian-5
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version:
+          [
+            "2.6",
+            "2.6-ucs2",
+            "2.7",
+            "2.7-ucs2",
+            "3.1",
+            "3.1-ucs2",
+            "3.2",
+            "3.2-ucs2",
+            "3.3",
+            "3.4",
+            "3.5",
+            "3.6",
+            "3.7",
+            "3.8",
+            "3.9",
+          ]
+      max-parallel: 1
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build Debian 6 with Python
+        run: |
+          make build-python base=debian:6 platform=i386                       \
+                            version=${{ matrix.python_version }}
