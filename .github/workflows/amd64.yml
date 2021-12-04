@@ -1,4 +1,4 @@
-name: ci-multiarch
+name: amd64
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
       -
         name: Build Debian
         run: |
-          make build-debian platform=multiarch                                \
+          make build-debian platform=amd64                                    \
                             version=${{ matrix.debian_version }}
 
   build-python-debian-4:
@@ -94,7 +94,7 @@ jobs:
       -
         name: Build Debian 4 with Python
         run: |
-          make build-python platform=multiarch                                \
+          make build-python platform=amd64                                    \
                             base=debian:4                                     \
                             version=${{ matrix.python_version }}
 
@@ -147,7 +147,7 @@ jobs:
       -
         name: Build Debian 5 with Python
         run: |
-          make build-python platform=multiarch                                \
+          make build-python platform=amd64                                    \
                             base=debian:5                                     \
                             version=${{ matrix.python_version }}
 
@@ -200,6 +200,6 @@ jobs:
       -
         name: Build Debian 6 with Python
         run: |
-          make build-python platform=multiarch                                \
+          make build-python platform=amd64                                    \
                             base=debian:6                                     \
                             version=${{ matrix.python_version }}
