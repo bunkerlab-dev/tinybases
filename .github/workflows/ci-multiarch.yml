@@ -42,7 +42,8 @@ jobs:
       -
         name: Build Debian
         run: |
-          make build-debian version=${{ matrix.debian_version }}
+          make build-debian platform=multiarch                                \
+                            version=${{ matrix.debian_version }}
 
   build-python-debian-4:
     needs: build-debian
@@ -93,7 +94,8 @@ jobs:
       -
         name: Build Debian 4 with Python
         run: |
-          make build-python base=debian:4                                     \
+          make build-python platform=multiarch                                \
+                            base=debian:4                                     \
                             version=${{ matrix.python_version }}
 
   build-python-debian-5:
@@ -145,7 +147,8 @@ jobs:
       -
         name: Build Debian 5 with Python
         run: |
-          make build-python base=debian:5                                     \
+          make build-python platform=multiarch                                \
+                            base=debian:5                                     \
                             version=${{ matrix.python_version }}
 
   build-python-debian-6:
@@ -197,5 +200,6 @@ jobs:
       -
         name: Build Debian 6 with Python
         run: |
-          make build-python base=debian:6                                     \
+          make build-python platform=multiarch                                \
+                            base=debian:6                                     \
                             version=${{ matrix.python_version }}

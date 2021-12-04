@@ -11,7 +11,7 @@ build-debian:
 	        make build-debian version="$$v" platform="$(platform)";       \
 	    done                                                              \
 	else                                                                  \
-	    if [ "$(platform)" = "all" -o "$(platform)" = "" ]; then          \
+	    if [ "$(platform)" = "multiarch" -o "$(platform)" = "" ]; then    \
 	        plat="linux/amd64,linux/386";                                 \
 	        tag="tinybases/debian:$$version";                             \
 	    elif [ "$(platform)" = "amd64" ]; then                            \
@@ -46,7 +46,7 @@ build-python:
 	    done                                                              \
 	else                                                                  \
 	    base_hyphenised="$(shell echo $(base) | tr ':' '-')";             \
-	    if [ "$(platform)" = "all" -o "$(platform)" = "" ]; then          \
+	    if [ "$(platform)" = "multiarch" -o "$(platform)" = "" ]; then    \
 	        plat="linux/amd64,linux/386";                                 \
 	        tag="tinybases/python:$$version-$$base_hyphenised";           \
 	    elif [ "$(platform)" = "amd64" ]; then                            \
