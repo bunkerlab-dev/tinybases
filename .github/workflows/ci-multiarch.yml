@@ -1,4 +1,4 @@
-name: ci
+name: ci-multiarch
 
 on:
   push:
@@ -93,7 +93,8 @@ jobs:
       -
         name: Build Debian 4 with Python
         run: |
-          make build-python base=debian:4 version=${{ matrix.python_version }}
+          make build-python base=debian:4                                     \
+                            version=${{ matrix.python_version }}
 
   build-python-debian-5:
     needs: build-python-debian-4
@@ -144,7 +145,8 @@ jobs:
       -
         name: Build Debian 5 with Python
         run: |
-          make build-python base=debian:5 version=${{ matrix.python_version }}
+          make build-python base=debian:5                                     \
+                            version=${{ matrix.python_version }}
 
   build-python-debian-6:
     needs: build-python-debian-5
@@ -195,4 +197,5 @@ jobs:
       -
         name: Build Debian 6 with Python
         run: |
-          make build-python base=debian:6 version=${{ matrix.python_version }}
+          make build-python base=debian:6                                     \
+                            version=${{ matrix.python_version }}
