@@ -8,16 +8,25 @@ build-debian:
 
 	@if [ "$(version)" = "all" -o "$(version)" = "" ]; then               \
 	    for v in $(ALL_DEBIAN_VERSIONS); do                               \
-	        make build-debian version="$$v";                              \
+	        make build-debian version="$$v" platform="$(platform)";       \
 	    done                                                              \
 	else                                                                  \
-	    tag="tinybases/debian:$$version";                                 \
+	    if [ "$(platform)" = "all" -o "$(platform)" = "" ]; then          \
+	        plat="linux/amd64,linux/386";                                 \
+	        tag="tinybases/debian:$$version";                             \
+	    elif [ "$(platform)" = "amd64" ]; then                            \
+	        plat="linux/amd64";                                           \
+	        tag="tinybases/amd64-debian:$$version";                       \
+	    elif [ "$(platform)" = "i386" ]; then                             \
+	        plat="linux/386";                                             \
+	        tag="tinybases/i386-debian:$$version";                        \
+	    fi;                                                               \
 	    echo "Building $$tag...";                                         \
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
 	        --push                                                        \
 	        --file Dockerfile.debian                                      \
-	        --platform=linux/amd64,linux/386                              \
+	        --platform="$$plat"                                           \
 	        --tag "$$tag"                                                 \
 	        --build-arg VERSION="$(version)";                             \
 	fi
