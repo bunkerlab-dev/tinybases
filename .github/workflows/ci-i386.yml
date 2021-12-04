@@ -94,7 +94,8 @@ jobs:
       -
         name: Build Debian 4 with Python
         run: |
-          make build-python base=debian:4 platform=i386                       \
+          make build-python platform=i386                                     \
+                            base=debian:4                                     \
                             version=${{ matrix.python_version }}
 
   build-python-debian-5:
@@ -146,7 +147,8 @@ jobs:
       -
         name: Build Debian 5 with Python
         run: |
-          make build-python base=debian:5 platform=i386                       \
+          make build-python platform=i386                                     \
+                            base=debian:5                                     \
                             version=${{ matrix.python_version }}
 
   build-python-debian-6:
@@ -198,5 +200,6 @@ jobs:
       -
         name: Build Debian 6 with Python
         run: |
-          make build-python base=debian:6 platform=i386                       \
+          make build-python platform=i386                                     \
+                            base=debian:6                                     \
                             version=${{ matrix.python_version }}
