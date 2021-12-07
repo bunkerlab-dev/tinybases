@@ -22,28 +22,17 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-        id: buildx
-      -
-        name: Inspect builder
-        run: |
-          echo "Name:      ${{ steps.buildx.outputs.name }}"
-          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-          echo "Status:    ${{ steps.buildx.outputs.status }}"
-          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
-      -
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
       -
-        name: Build Debian
-        run: |
-          make build-debian platform=x86                                      \
-                            version=${{ matrix.debian_version }}
+        name: Build Debian using Docker Buildx
+        uses: ./.github/actions/build-debian-image
+        with:
+          version: ${{matrix.debian_version}}
+          arch: x86
 
   build-python-debian-4:
     needs: build-debian
