@@ -17,9 +17,9 @@ build-debian:
 	    elif [ "$(platform)" = "x64" ]; then                              \
 	        plat="linux/amd64";                                           \
 	        tag="tinybases/x64-debian:$$version";                         \
-	    elif [ "$(platform)" = "i386" ]; then                             \
+	    elif [ "$(platform)" = "x86" ]; then                              \
 	        plat="linux/386";                                             \
-	        tag="tinybases/i386-debian:$$version";                        \
+	        tag="tinybases/x86-debian:$$version";                         \
 	    fi;                                                               \
 	    echo "Building $$tag...";                                         \
 	    docker buildx create --use;                                       \
@@ -52,9 +52,9 @@ build-python:
 	    elif [ "$(platform)" = "x64" ]; then                              \
 	        plat="linux/amd64";                                           \
 	        tag="pylegacy/x64-python:$$version-$$base_hyphenised";        \
-	    elif [ "$(platform)" = "i386" ]; then                             \
+	    elif [ "$(platform)" = "x86" ]; then                              \
 	        plat="linux/386";                                             \
-	        tag="pylegacy/i386-python:$$version-$$base_hyphenised";       \
+	        tag="pylegacy/x86-python:$$version-$$base_hyphenised";        \
 	    fi;                                                               \
 	    echo "Building $$tag...";                                         \
 	    docker buildx create --use;                                       \
