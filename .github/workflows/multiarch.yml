@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python_version:
+        python-version:
           [
             "2.6",
             "2.6-ucs2",
@@ -74,14 +74,14 @@ jobs:
         with:
           arch: multiarch
           base: debian:4
-          version: ${{ matrix.python_version }}
+          version: ${{ matrix.python-version }}
 
   build-python-debian-5:
     needs: build-python-debian-4
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python_version:
+        python-version:
           [
             "2.6",
             "2.6-ucs2",
@@ -116,14 +116,14 @@ jobs:
         with:
           arch: multiarch
           base: debian:5
-          version: ${{ matrix.python_version }}
+          version: ${{ matrix.python-version }}
 
   build-python-debian-6:
     needs: build-python-debian-5
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python_version:
+        python-version:
           [
             "2.6",
             "2.6-ucs2",
@@ -158,4 +158,4 @@ jobs:
         with:
           arch: multiarch
           base: debian:6
-          version: ${{ matrix.python_version }}
+          version: ${{ matrix.python-version }}
