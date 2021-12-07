@@ -1,0 +1,37 @@
+name: "Build Python image"
+description: "Build Python Docker image for a given architecture"
+
+inputs:
+  arch:
+    description: "Hardware architecture"
+    required: true
+    default: "multiarch"
+  base:
+    description: "Base Docker image"
+    required: true
+  version:
+    description: "Python version"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    -
+      name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+      id: buildx
+    -
+      name: Inspect builder
+      shell: sh
+      run: |
+        echo "Name:      ${{steps.buildx.outputs.name}}"
+        echo "Endpoint:  ${{steps.buildx.outputs.endpoint}}"
+        echo "Status:    ${{steps.buildx.outputs.status}}"
+        echo "Flags:     ${{steps.buildx.outputs.flags}}"
+        echo "Platforms: ${{steps.buildx.outputs.platforms}}"
+    -
+      name: Build Python
+      shell: sh
+      run: |
+        make build-python platform=${{inputs.arch}} base=${{inputs.base}}     \
+                          version=${{inputs.version}}

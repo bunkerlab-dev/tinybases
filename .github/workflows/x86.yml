@@ -31,8 +31,8 @@ jobs:
         name: Build Debian using Docker Buildx
         uses: ./.github/actions/build-debian-image
         with:
-          version: ${{matrix.debian_version}}
           arch: x86
+          version: ${{matrix.debian_version}}
 
   build-python-debian-4:
     needs: build-debian
@@ -63,29 +63,18 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Inspect builder
-        run: |
-          echo "Name:      ${{ steps.buildx.outputs.name }}"
-          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-          echo "Status:    ${{ steps.buildx.outputs.status }}"
-          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
-      -
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
       -
-        name: Build Debian 4 with Python
-        run: |
-          make build-python platform=x86                                      \
-                            base=debian:4                                     \
-                            version=${{ matrix.python_version }}
+        name: Build Python using Docker Buildx
+        uses: ./.github/actions/build-python-image
+        with:
+          arch: x86
+          base: debian:4
+          version: ${{matrix.python_version}}
 
   build-python-debian-5:
     needs: build-python-debian-4
@@ -116,29 +105,18 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Inspect builder
-        run: |
-          echo "Name:      ${{ steps.buildx.outputs.name }}"
-          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-          echo "Status:    ${{ steps.buildx.outputs.status }}"
-          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
-      -
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
       -
-        name: Build Debian 5 with Python
-        run: |
-          make build-python platform=x86                                      \
-                            base=debian:5                                     \
-                            version=${{ matrix.python_version }}
+        name: Build Python using Docker Buildx
+        uses: ./.github/actions/build-python-image
+        with:
+          arch: x86
+          base: debian:5
+          version: ${{matrix.python_version}}
 
   build-python-debian-6:
     needs: build-python-debian-5
@@ -169,26 +147,15 @@ jobs:
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Inspect builder
-        run: |
-          echo "Name:      ${{ steps.buildx.outputs.name }}"
-          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-          echo "Status:    ${{ steps.buildx.outputs.status }}"
-          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
-      -
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
       -
-        name: Build Debian 6 with Python
-        run: |
-          make build-python platform=x86                                      \
-                            base=debian:6                                     \
-                            version=${{ matrix.python_version }}
+        name: Build Python using Docker Buildx
+        uses: ./.github/actions/build-python-image
+        with:
+          arch: x86
+          base: debian:6
+          version: ${{matrix.python_version}}
