@@ -30,4 +30,5 @@ runs:
       name: Build Debian
       shell: sh
       run: |
-        make build-debian platform=${{ inputs.arch }} version=${{ inputs.version }}
+        make build-debian platform=${{ inputs.arch }}                         \
+                          version=${{ inputs.version }}
