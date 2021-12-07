@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        debian_version:
+        debian-version:
           [
             "4",
             "5",
@@ -32,7 +32,7 @@ jobs:
         uses: ./.github/actions/build-debian-image
         with:
           arch: multiarch
-          version: ${{ matrix.debian_version }}
+          version: ${{ matrix.debian-version }}
 
   build-python-debian-4:
     needs: build-debian
