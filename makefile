@@ -14,9 +14,9 @@ build-debian:
 	    if [ "$(platform)" = "multiarch" -o "$(platform)" = "" ]; then    \
 	        plat="linux/amd64,linux/386";                                 \
 	        tag="tinybases/debian:$$version";                             \
-	    elif [ "$(platform)" = "amd64" ]; then                            \
+	    elif [ "$(platform)" = "x64" ]; then                              \
 	        plat="linux/amd64";                                           \
-	        tag="tinybases/amd64-debian:$$version";                       \
+	        tag="tinybases/x64-debian:$$version";                         \
 	    elif [ "$(platform)" = "i386" ]; then                             \
 	        plat="linux/386";                                             \
 	        tag="tinybases/i386-debian:$$version";                        \
@@ -49,9 +49,9 @@ build-python:
 	    if [ "$(platform)" = "multiarch" -o "$(platform)" = "" ]; then    \
 	        plat="linux/amd64,linux/386";                                 \
 	        tag="pylegacy/python:$$version-$$base_hyphenised";            \
-	    elif [ "$(platform)" = "amd64" ]; then                            \
+	    elif [ "$(platform)" = "x64" ]; then                              \
 	        plat="linux/amd64";                                           \
-	        tag="pylegacy/amd64-python:$$version-$$base_hyphenised";      \
+	        tag="pylegacy/x64-python:$$version-$$base_hyphenised";        \
 	    elif [ "$(platform)" = "i386" ]; then                             \
 	        plat="linux/386";                                             \
 	        tag="pylegacy/i386-python:$$version-$$base_hyphenised";       \
