@@ -29,7 +29,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build Debian using Docker Buildx
-        uses: ./.github/actions/build-debian-image
+        uses: ./.github/actions/build-debian
         with:
           arch: multiarch
           version: ${{ matrix.debian-version }}
@@ -70,7 +70,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build Python using Docker Buildx
-        uses: ./.github/actions/build-python-image
+        uses: ./.github/actions/build-python
         with:
           arch: multiarch
           base: debian:4
@@ -112,7 +112,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build Python using Docker Buildx
-        uses: ./.github/actions/build-python-image
+        uses: ./.github/actions/build-python
         with:
           arch: multiarch
           base: debian:5
@@ -154,7 +154,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build Python using Docker Buildx
-        uses: ./.github/actions/build-python-image
+        uses: ./.github/actions/build-python
         with:
           arch: multiarch
           base: debian:6
