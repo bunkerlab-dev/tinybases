@@ -24,14 +24,14 @@ runs:
       name: Inspect builder
       shell: sh
       run: |
-        echo "Name:      ${{steps.buildx.outputs.name}}"
-        echo "Endpoint:  ${{steps.buildx.outputs.endpoint}}"
-        echo "Status:    ${{steps.buildx.outputs.status}}"
-        echo "Flags:     ${{steps.buildx.outputs.flags}}"
-        echo "Platforms: ${{steps.buildx.outputs.platforms}}"
+        echo "Name:      ${{ steps.buildx.outputs.name }}"
+        echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+        echo "Status:    ${{ steps.buildx.outputs.status }}"
+        echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+        echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
     -
       name: Build Python
       shell: sh
       run: |
-        make build-python platform=${{inputs.arch}} base=${{inputs.base}}     \
-                          version=${{inputs.version}}
+        make build-python platform=${{ inputs.arch }} base=${{ inputs.base }}     \
+                          version=${{ inputs.version }}

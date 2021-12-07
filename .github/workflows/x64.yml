@@ -25,14 +25,14 @@ jobs:
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build Debian using Docker Buildx
         uses: ./.github/actions/build-debian-image
         with:
           arch: x64
-          version: ${{matrix.debian_version}}
+          version: ${{ matrix.debian_version }}
 
   build-python-debian-4:
     needs: build-debian
@@ -66,15 +66,15 @@ jobs:
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build Python using Docker Buildx
         uses: ./.github/actions/build-python-image
         with:
           arch: x64
           base: debian:4
-          version: ${{matrix.python_version}}
+          version: ${{ matrix.python_version }}
 
   build-python-debian-5:
     needs: build-python-debian-4
@@ -108,15 +108,15 @@ jobs:
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build Python using Docker Buildx
         uses: ./.github/actions/build-python-image
         with:
           arch: x64
           base: debian:5
-          version: ${{matrix.python_version}}
+          version: ${{ matrix.python_version }}
 
   build-python-debian-6:
     needs: build-python-debian-5
@@ -150,12 +150,12 @@ jobs:
         name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Build Python using Docker Buildx
         uses: ./.github/actions/build-python-image
         with:
           arch: x64
           base: debian:6
-          version: ${{matrix.python_version}}
+          version: ${{ matrix.python_version }}

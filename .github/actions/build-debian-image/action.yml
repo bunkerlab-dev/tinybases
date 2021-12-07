@@ -21,13 +21,13 @@ runs:
       name: Inspect builder
       shell: sh
       run: |
-        echo "Name:      ${{steps.buildx.outputs.name}}"
-        echo "Endpoint:  ${{steps.buildx.outputs.endpoint}}"
-        echo "Status:    ${{steps.buildx.outputs.status}}"
-        echo "Flags:     ${{steps.buildx.outputs.flags}}"
-        echo "Platforms: ${{steps.buildx.outputs.platforms}}"
+        echo "Name:      ${{ steps.buildx.outputs.name }}"
+        echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+        echo "Status:    ${{ steps.buildx.outputs.status }}"
+        echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+        echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
     -
       name: Build Debian
       shell: sh
       run: |
-        make build-debian platform=${{inputs.arch}} version=${{inputs.version}}
+        make build-debian platform=${{ inputs.arch }} version=${{ inputs.version }}
