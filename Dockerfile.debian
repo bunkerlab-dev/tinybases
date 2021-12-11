@@ -178,6 +178,17 @@ RUN chroot ${CHROOT} sh -c "                                                  \
 RUN sed -i 's|$"|"|; s|#! /bin/bash|#! /bin/sh|' ${CHROOT}/usr/bin/ldd
 RUN sed -i 's|if \(set -o pipefail 2> /dev/null; then\)|if [ ! -z "${BASH_VERSION%%.*}" ] \&\& [ "${BASH_VERSION%%.*}" -ge 3 ] \&\& \1|' ${CHROOT}/usr/bin/ldd
 
+# Copy `getopt` program manually extracted from `util-linux`.
+RUN chroot ${CHROOT} sh -c "                                                  \
+    apt-get update;                                                           \
+    apt-get install -y --download-only util-linux;                            \
+    mkdir -p /usr/bin /usr/share/doc/util-linux;                              \
+    dpkg-deb -x /var/cache/apt/archives/util-linux*.deb /tmp;                 \
+    cp /tmp/usr/bin/getopt /usr/bin/;                                         \
+    cp /tmp/usr/share/doc/util-linux/copyright /usr/share/doc/util-linux/;    \
+    rm -rf /tmp/*;                                                            \
+"
+
 # Replace bash with dash (cheat the system with a symlink if needed).
 RUN chroot ${CHROOT} sh -c "                                                  \
     echo 'dash dash/sh boolean true' | debconf-set-selections;                \
