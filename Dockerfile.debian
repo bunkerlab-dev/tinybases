@@ -4,7 +4,6 @@ FROM --platform=${TARGETPLATFORM} debian:buster-slim AS host
 
 # Set environment variables.
 ENV DEBIAN_ARCHIVE=http://archive.debian.org/debian
-ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=POSIX
 ENV LANGUAGE=POSIX
 ENV LC_ALL=POSIX
@@ -29,7 +28,7 @@ RUN wget https://raw.githubusercontent.com/minos-org/minos-static/master/static-
     && rm static-get
 
 # Prepare target.
-ENV CHROOT="/mnt/chroot"
+ARG CHROOT="/mnt/chroot"
 RUN mkdir -p ${CHROOT}
 
 # Apply debootstrap.
@@ -239,15 +238,14 @@ RUN chroot ${CHROOT} sh -c "                                                  \
 FROM --platform=${TARGETPLATFORM} scratch AS tinybases-debian
 
 # Set environment variables.
-ENV DEBIAN_FRONTEND=noninteractive
+ENV ENV="/etc/profile"
 ENV LANG=POSIX
 ENV LANGUAGE=POSIX
 ENV LC_ALL=POSIX
 ENV TZ=UTC
 
 # Copy rootfs from host.
-ENV ENV="/etc/profile"
-ENV CHROOT="/mnt/chroot"
+ARG CHROOT="/mnt/chroot"
 COPY --from=host ${CHROOT} /
 
 # Launch shell.
