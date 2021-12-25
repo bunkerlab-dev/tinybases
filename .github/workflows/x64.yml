@@ -15,6 +15,7 @@ jobs:
             "4",
             "5",
             "6",
+            "8",
           ]
       max-parallel: 1
     steps:
@@ -158,4 +159,46 @@ jobs:
         with:
           arch: x64
           base: debian:6
+          version: ${{ matrix.python-version }}
+
+  build-python-debian-8:
+    needs: build-python-debian-6
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          [
+            "2.6",
+            "2.6-ucs2",
+            "2.7",
+            "2.7-ucs2",
+            "3.1",
+            "3.1-ucs2",
+            "3.2",
+            "3.2-ucs2",
+            "3.3",
+            "3.4",
+            "3.5",
+            "3.6",
+            "3.7",
+            "3.8",
+            "3.9",
+          ]
+      max-parallel: 1
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build Python using Docker Buildx
+        uses: ./.github/actions/build-python
+        with:
+          arch: x64
+          base: debian:8
           version: ${{ matrix.python-version }}
