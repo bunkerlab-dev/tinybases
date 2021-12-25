@@ -196,12 +196,14 @@ RUN echo ${TZ} > ${CHROOT}/etc/timezone
 COPY files/etc/apt ${CHROOT}/etc/apt
 
 # Add backports repository to target.
-RUN chroot ${CHROOT} sh -c "                                                  \
-    distro_name=\$(cat /etc/apt/sources.list | head -n1 | cut -d' ' -f3);     \
-    echo \"deb ${DEBIAN_ARCHIVE}-backports \${distro_name}-backports main\"   \
-        >> /etc/apt/sources.list;                                             \
-    apt-key adv --recv-keys --keyserver keyserver.ubuntu.com EA8E8B2116BA136C \
-"
+RUN chroot ${CHROOT} sh -c '                                                  \
+    distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)       \
+    ; remote=${DEBIAN_ARCHIVE}$(test ${VERSION} -ge 8 && echo || echo "-backports") \
+    ; echo "deb ${remote} ${distro_name}-backports main"                      \
+        >> /etc/apt/sources.list                                              \
+    ; apt-key adv --recv-keys --keyserver keyserver.ubuntu.com                \
+        EA8E8B2116BA136C                                                      \
+'
 
 # Replace bash with dash (cheat the system with a symlink if needed).
 RUN chroot ${CHROOT} sh -c '                                                  \
