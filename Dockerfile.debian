@@ -147,6 +147,38 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 ncurses-bin                                                   \
             " | xargs)                                                        \
         ;;                                                                    \
+        8|jessie)                                                             \
+            VERSION=jessie                                                    \
+            INCLUDE=$(echo "                                                  \
+                dash                                                          \
+                patch                                                         \
+            ")                                                                \
+            EXCLUDE=$(echo "                                                  \
+                bsdutils                                                      \
+                dselect                                                       \
+                e2fslibs                                                      \
+                e2fsprogs                                                     \
+                libblkid1                                                     \
+                hostname                                                      \
+                libsemanage1                                                  \
+                libustr-1.0-1                                                 \
+                libuuid1                                                      \
+                passwd                                                        \
+                init                                                          \
+                systemd                                                       \
+                systemd-sysv                                                  \
+                initscripts                                                   \
+                libmount1                                                     \
+                mount                                                         \
+                util-linux                                                    \
+                libss2                                                        \
+                lsb-base                                                      \
+                libsmartcols1                                                 \
+                ncurses-base                                                  \
+                ncurses-bin                                                   \
+                gcc-4.8-base                                                  \
+            " | xargs)                                                        \
+        ;;                                                                    \
     esac;                                                                     \
     debootstrap --arch=${ARCH} --variant=minbase --no-check-gpg               \
                 --exclude="${EXCLUDE}" --include="${INCLUDE}"                 \
@@ -172,26 +204,37 @@ RUN chroot ${CHROOT} sh -c "                                                  \
 "
 
 # Replace bash with dash (cheat the system with a symlink if needed).
-RUN chroot ${CHROOT} sh -c "                                                  \
-    echo 'dash dash/sh boolean true' | debconf-set-selections;                \
-    yes | dpkg-reconfigure dash;                                              \
-    echo 'Yes, do as I say!' | apt-get remove --purge -y --force-yes bash;    \
-"
+RUN chroot ${CHROOT} sh -c '                                                  \
+    echo "dash dash/sh boolean true" | debconf-set-selections                 \
+    ; yes | dpkg-reconfigure dash                                             \
+    ; echo "Yes, do as I say!" |                                              \
+        apt-get remove --purge -y --force-yes bash                            \
+'
 
 # Fix `ldd` to be dash-compliant.
 RUN sed -i 's|$"|"|; s|#! /bin/bash|#! /bin/sh|' ${CHROOT}/usr/bin/ldd
 RUN sed -i 's|if \(set -o pipefail 2> /dev/null; then\)|if [ ! -z "${BASH_VERSION%%.*}" ] \&\& [ "${BASH_VERSION%%.*}" -ge 3 ] \&\& \1|' ${CHROOT}/usr/bin/ldd
 
+# Remove login and libpam modules if still there.
+RUN chroot ${CHROOT} sh -c '                                                  \
+    if [ ! -z "$(command -v login)" ]; then                                   \
+        pkgs="login libpam0g libpam-modules libpam-runtime"                   \
+        ; echo "" > /var/lib/dpkg/info/libpam-runtime.prerm                   \
+        ; echo "Yes, do as I say!" |                                          \
+            apt-get remove --purge -y --force-yes ${pkgs}                     \
+    ; fi                                                                      \
+'
+
 # Copy `getopt` program manually extracted from `util-linux`.
-RUN chroot ${CHROOT} sh -c "                                                  \
-    apt-get update;                                                           \
-    apt-get install -y --download-only util-linux;                            \
-    mkdir -p /usr/bin /usr/share/doc/util-linux;                              \
-    dpkg-deb -x /var/cache/apt/archives/util-linux*.deb /tmp;                 \
-    cp /tmp/usr/bin/getopt /usr/bin/;                                         \
-    cp /tmp/usr/share/doc/util-linux/copyright /usr/share/doc/util-linux/;    \
-    rm -rf /tmp/*;                                                            \
-"
+RUN chroot ${CHROOT} sh -c '                                                  \
+    apt-get update                                                            \
+    ; apt-get install -y --download-only util-linux                           \
+    ; mkdir -p /usr/bin /usr/share/doc/util-linux                             \
+    ; dpkg-deb -x /var/cache/apt/archives/util-linux*.deb /tmp                \
+    ; cp /tmp/usr/bin/getopt /usr/bin/                                        \
+    ; cp /tmp/usr/share/doc/util-linux/copyright /usr/share/doc/util-linux/   \
+    ; rm -rf /tmp/*                                                           \
+'
 
 # Inject host certificates into target.
 RUN mkdir -p ${CHROOT}/etc/ssl/certs
@@ -199,13 +242,13 @@ RUN cp /etc/ssl/certs/ca-certificates.crt ${CHROOT}/etc/ssl/cert.pem
 
 # Inject the static `wget` in the host and configure the CA certificates.
 RUN cp -R /opt/wget ${CHROOT}/opt/wget                                        \
-    && chroot ${CHROOT} sh -c "                                               \
-        ln -s /opt/wget/bin/wget /usr/local/bin/wget;                         \
-        echo 'ca_certificate=/etc/ssl/cert.pem' > /etc/wgetrc;                \
-    "
+    && chroot ${CHROOT} sh -c '                                               \
+        ln -s /opt/wget/bin/wget /usr/local/bin/wget                          \
+        ; echo "ca_certificate=/etc/ssl/cert.pem" > /etc/wgetrc               \
+'
 
 # Remove bulky files in target unless mandatory.
-RUN chroot ${CHROOT} sh -c "                                                  \
+RUN chroot ${CHROOT} sh -c '                                                  \
     # Remove unused folders.
       rm -rf                                                                  \
         /etc/cron.*                                                           \
@@ -223,12 +266,12 @@ RUN chroot ${CHROOT} sh -c "                                                  \
         /var/lib/apt/lists                                                    \
         /var/log                                                              \
         -type f | xargs rm -f                                                 \
-    ; find / -regex '.*~$' | xargs rm -rf                                     \
+    ; find / -regex ".*~$" | xargs rm -rf                                     \
     # Clean docs, lintian files, locales and manpages.
     ; sh /etc/apt/apt.conf.d.scripts/99docker_dpkg_postinvoke.sh              \
     # Specific removal for Debian Lenny.
     ; rm -rf /usr/bin/oldfind                                                 \
-"
+'
 ###############################################################################
 
 
