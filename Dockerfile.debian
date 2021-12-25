@@ -1,6 +1,6 @@
 # Host Docker image.
 ###############################################################################
-FROM --platform=${TARGETPLATFORM} debian:buster-slim AS host
+FROM --platform=${TARGETPLATFORM} debian:bullseye-slim AS host
 
 # Set environment variables.
 ENV DEBIAN_ARCHIVE=http://archive.debian.org/debian
