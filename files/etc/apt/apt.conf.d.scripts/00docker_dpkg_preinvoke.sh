@@ -17,3 +17,8 @@ for item in $(echo "de es fr hu ja man1 man3 man5 man7 man8            \
                     pl pt_BR ru sv"); do
     mkdir -p /usr/share/man/${item}
 done
+
+# Cheat dpkg about `/bin/bash` if it is not available.
+if [ ! -f /bin/bash ]; then
+    ln -s /bin/sh /bin/bash
+fi

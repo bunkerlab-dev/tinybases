@@ -28,3 +28,8 @@ rm -rf /usr/share/locale/*
 # Clean manpages.
 rm -rf /usr/share/man/*
 rm -rf /var/cache/man
+
+# Undo dpkg cheat about `/bin/bash` if done during preinvoke script.
+if [ -L /bin/bash ]; then
+    rm -f /bin/bash
+fi
