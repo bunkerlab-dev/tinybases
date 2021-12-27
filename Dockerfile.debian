@@ -59,27 +59,20 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 dselect                                                       \
                 e2fslibs                                                      \
                 e2fsprogs                                                     \
+                hostname                                                      \
+                initscripts                                                   \
                 libblkid1                                                     \
                 libdevmapper1.02                                              \
-                mount                                                         \
-                hostname                                                      \
-                libcap1                                                       \
-                libdb4.3                                                      \
-                libpam0g                                                      \
-                libpam-modules                                                \
-                libpam-runtime                                                \
-                libuuid1                                                      \
-                login                                                         \
-                passwd                                                        \
-                procps                                                        \
-                initscripts                                                   \
-                sysvinit                                                      \
                 libslang2                                                     \
-                util-linux                                                    \
                 libss2                                                        \
+                libuuid1                                                      \
                 lsb-base                                                      \
+                mount                                                         \
                 ncurses-base                                                  \
                 ncurses-bin                                                   \
+                procps                                                        \
+                sysvinit                                                      \
+                util-linux                                                    \
             " | xargs)                                                        \
         ;;                                                                    \
         5|lenny)                                                              \
@@ -93,28 +86,22 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 dselect                                                       \
                 e2fslibs                                                      \
                 e2fsprogs                                                     \
+                gcc-4.2-base                                                  \
+                hostname                                                      \
+                initscripts                                                   \
                 libblkid1                                                     \
                 libdevmapper1.02.1                                            \
-                hostname                                                      \
                 libcap1                                                       \
-                libdb4.3                                                      \
-                libpam0g                                                      \
-                libpam-modules                                                \
-                libpam-runtime                                                \
-                libuuid1                                                      \
-                login                                                         \
-                passwd                                                        \
-                procps                                                        \
-                initscripts                                                   \
-                sysvinit                                                      \
-                mount                                                         \
                 libslang2                                                     \
-                util-linux                                                    \
                 libss2                                                        \
+                libuuid1                                                      \
                 lsb-base                                                      \
+                mount                                                         \
                 ncurses-base                                                  \
                 ncurses-bin                                                   \
-                gcc-4.2-base                                                  \
+                procps                                                        \
+                sysvinit                                                      \
+                util-linux                                                    \
             " | xargs)                                                        \
         ;;                                                                    \
         6|squeeze)                                                            \
@@ -128,23 +115,18 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 dselect                                                       \
                 e2fslibs                                                      \
                 e2fsprogs                                                     \
-                libblkid1                                                     \
                 hostname                                                      \
-                libpam0g                                                      \
-                libpam-modules                                                \
-                libpam-runtime                                                \
-                libuuid1                                                      \
-                login                                                         \
-                passwd                                                        \
-                procps                                                        \
                 initscripts                                                   \
-                sysvinit                                                      \
-                mount                                                         \
-                util-linux                                                    \
+                libblkid1                                                     \
                 libss2                                                        \
+                libuuid1                                                      \
                 lsb-base                                                      \
+                mount                                                         \
                 ncurses-base                                                  \
                 ncurses-bin                                                   \
+                procps                                                        \
+                sysvinit                                                      \
+                util-linux                                                    \
             " | xargs)                                                        \
         ;;                                                                    \
         8|jessie)                                                             \
@@ -158,25 +140,22 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 dselect                                                       \
                 e2fslibs                                                      \
                 e2fsprogs                                                     \
-                libblkid1                                                     \
+                gcc-4.8-base                                                  \
                 hostname                                                      \
-                libsemanage1                                                  \
-                libustr-1.0-1                                                 \
-                libuuid1                                                      \
-                passwd                                                        \
                 init                                                          \
+                initscripts                                                   \
+                libblkid1                                                     \
+                libsmartcols1                                                 \
+                libss2                                                        \
+                libuuid1                                                      \
+                lsb-base                                                      \
                 systemd                                                       \
                 systemd-sysv                                                  \
-                initscripts                                                   \
                 libmount1                                                     \
                 mount                                                         \
-                util-linux                                                    \
-                libss2                                                        \
-                lsb-base                                                      \
-                libsmartcols1                                                 \
                 ncurses-base                                                  \
                 ncurses-bin                                                   \
-                gcc-4.8-base                                                  \
+                util-linux                                                    \
             " | xargs)                                                        \
         ;;                                                                    \
     esac;                                                                     \
@@ -219,12 +198,26 @@ RUN sed -i 's|if \(set -o pipefail 2> /dev/null; then\)|if [ ! -z "${BASH_VERSIO
 
 # Remove login and libpam modules if still there.
 RUN chroot ${CHROOT} sh -c '                                                  \
-    if [ ! -z "$(command -v login)" ]; then                                   \
-        pkgs="login libpam0g libpam-modules libpam-runtime"                   \
-        ; echo "" > /var/lib/dpkg/info/libpam-runtime.prerm                   \
-        ; echo "Yes, do as I say!" |                                          \
-            apt-get remove --purge -y --force-yes ${pkgs}                     \
-    ; fi                                                                      \
+    pkgs="login libpam0g libpam-modules libpam-runtime"                       \
+    ; case "${VERSION}" in                                                    \
+        4) pkgs="${pkgs} libdb4.3 libcap1" ;;                                 \
+        5) pkgs="${pkgs} libdb4.6" ;;                                         \
+        6) pkgs="${pkgs} libdb4.8" ;;                                         \
+        8) pkgs="${pkgs} libdb5.3" ;;                                         \
+    esac                                                                      \
+    ; echo "#! /bin/sh" > /var/lib/dpkg/info/libpam-runtime.prerm             \
+    ; echo "Yes, do as I say!" |                                              \
+        apt-get remove --purge -y --force-yes ${pkgs}                         \
+'
+
+# Remove passwd if still there.
+RUN chroot ${CHROOT} sh -c '                                                  \
+    pkgs="passwd"                                                             \
+    ; case "${VERSION}" in                                                    \
+        8) pkgs="libsemanage-common libsemanage1 libustr-1.0-1" ;;            \
+    esac                                                                      \
+    ; echo "Yes, do as I say!" |                                              \
+        apt-get remove --purge -y --force-yes ${pkgs}                         \
 '
 
 # Copy `getopt` program manually extracted from `util-linux`.
