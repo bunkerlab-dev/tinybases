@@ -29,6 +29,9 @@ rm -rf /usr/share/locale/*
 rm -rf /usr/share/man/*
 rm -rf /var/cache/man
 
+# Remove backup files.
+find /var -type f -name "*-old" | xargs rm -rf
+
 # Undo dpkg cheat about `/bin/bash` if done during preinvoke script.
 if [ -L /bin/bash ]; then
     rm -f /bin/bash
