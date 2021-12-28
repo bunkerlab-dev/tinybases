@@ -9,7 +9,7 @@ packages as well as other bulky files (e.g. documentation).
 1. Install [Docker].
 
 2. Download the automated builds from the public [Docker Hub Registry]
-   located at [tinybases].
+   located at [tinybases] and [pylegacy].
 
 ## Usage
 
@@ -35,4 +35,6 @@ https://www.docker.com/
 [Docker Hub Registry]:
 https://hub.docker.com/
 [tinybases]:
-https://hub.docker.com/r/tinybases
+https://hub.docker.com/u/tinybases
+[pylegacy]:
+https://hub.docker.com/u/pylegacy
