@@ -129,6 +129,33 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 util-linux                                                    \
             " | xargs)                                                        \
         ;;                                                                    \
+        7|wheezy)                                                             \
+            VERSION=wheezy                                                    \
+            INCLUDE=$(echo "                                                  \
+                dash                                                          \
+                patch                                                         \
+            ")                                                                \
+            EXCLUDE=$(echo "                                                  \
+                bsdutils                                                      \
+                dselect                                                       \
+                e2fslibs                                                      \
+                e2fsprogs                                                     \
+                hostname                                                      \
+                initscripts                                                   \
+                libblkid1                                                     \
+                libmount1                                                     \
+                libss2                                                        \
+                libuuid1                                                      \
+                lsb-base                                                      \
+                mount                                                         \
+                ncurses-base                                                  \
+                ncurses-bin                                                   \
+                procps                                                        \
+                sysvinit                                                      \
+                util-linux                                                    \
+                xz-utils                                                      \
+            " | xargs)                                                        \
+        ;;                                                                    \
         8|jessie)                                                             \
             VERSION=jessie                                                    \
             INCLUDE=$(echo "                                                  \
@@ -145,16 +172,16 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 init                                                          \
                 initscripts                                                   \
                 libblkid1                                                     \
+                libmount1                                                     \
                 libsmartcols1                                                 \
                 libss2                                                        \
                 libuuid1                                                      \
                 lsb-base                                                      \
-                systemd                                                       \
-                systemd-sysv                                                  \
-                libmount1                                                     \
                 mount                                                         \
                 ncurses-base                                                  \
                 ncurses-bin                                                   \
+                systemd                                                       \
+                systemd-sysv                                                  \
                 util-linux                                                    \
             " | xargs)                                                        \
         ;;                                                                    \
@@ -177,7 +204,7 @@ COPY files/etc/apt ${CHROOT}/etc/apt
 # Add backports repository to target.
 RUN chroot ${CHROOT} sh -c '                                                  \
     distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)       \
-    ; remote=${DEBIAN_ARCHIVE}$(test ${VERSION} -ge 8 && echo || echo "-backports") \
+    ; remote=${DEBIAN_ARCHIVE}$(test ${VERSION} -ge 7 && echo || echo "-backports") \
     ; echo "deb ${remote} ${distro_name}-backports main"                      \
         >> /etc/apt/sources.list                                              \
     ; apt-key adv --recv-keys --keyserver keyserver.ubuntu.com                \
@@ -203,6 +230,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
         4) pkgs="${pkgs} libdb4.3 libcap1" ;;                                 \
         5) pkgs="${pkgs} libdb4.6" ;;                                         \
         6) pkgs="${pkgs} libdb4.8" ;;                                         \
+        7) pkgs="${pkgs} libdb5.1" ;;                                         \
         8) pkgs="${pkgs} libdb5.3" ;;                                         \
     esac                                                                      \
     ; echo "#! /bin/sh" > /var/lib/dpkg/info/libpam-runtime.prerm             \
@@ -214,7 +242,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
 RUN chroot ${CHROOT} sh -c '                                                  \
     pkgs="passwd"                                                             \
     ; case "${VERSION}" in                                                    \
-        8) pkgs="libsemanage-common libsemanage1 libustr-1.0-1" ;;            \
+        7|8) pkgs="libsemanage-common libsemanage1 libustr-1.0-1" ;;          \
     esac                                                                      \
     ; echo "Yes, do as I say!" |                                              \
         apt-get remove --purge -y --force-yes ${pkgs}                         \
