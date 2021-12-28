@@ -13,15 +13,21 @@ packages as well as other bulky files (e.g. documentation).
 
 ## Usage
 
-Given a Debian version `X`, you can run an interactive session as follows:
+Given a Debian version `X` (from 4 to 8), you can run an interactive
+session as follows:
 ```sh
 docker run --rm -it tinybases/debian:X
 ```
 
-Given a Python version `X.Y`, you can run an interactive session as follows:
+Given a Python version `X.Y` (from 2.6 to 3.9) and a Debian version `Z`
+(from 4 to 8), you can run an interactive session as follows:
 ```sh
-docker run --rm -it tinybases/python:X.Y-debian-5
+docker run --rm -it pylegacy/python:X.Y-debian-Z
 ```
+
+Additionally, per-arch images are provided for x86 and x64 in the Docker
+repositories `tinybases/x86-debian`, `tinybases/x64-debian`,
+`pylegacy/x86-python` and `pylegacy/x64-python`.
 
 
 [Docker]:
