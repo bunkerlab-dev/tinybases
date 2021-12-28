@@ -26,8 +26,8 @@ docker run --rm -it pylegacy/python:X.Y-debian-Z
 ```
 
 Additionally, per-arch images are provided for x86 and x64 in the Docker
-repositories `tinybases/x86-debian`, `tinybases/x64-debian`,
-`pylegacy/x86-python` and `pylegacy/x64-python`.
+repositories [tinybases/x86-debian], [tinybases/x64-debian],
+[pylegacy/x86-python] and [pylegacy/x64-python].
 
 ## Available symbols
 
@@ -59,5 +59,13 @@ https://www.docker.com/
 https://hub.docker.com/
 [tinybases]:
 https://hub.docker.com/u/tinybases
+[tinybases/x86-debian]:
+https://hub.docker.com/r/tinybases/x86-debian
+[tinybases/x64-debian]:
+https://hub.docker.com/r/tinybases/x64-debian
 [pylegacy]:
 https://hub.docker.com/u/pylegacy
+[pylegacy/x86-python]:
+https://hub.docker.com/r/pylegacy/x86-python
+[pylegacy/x64-python]:
+https://hub.docker.com/r/pylegacy/x64-python
