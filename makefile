@@ -1,7 +1,7 @@
 ALL_DEBIAN_VERSIONS = $(shell echo "4 5 6")
 ALL_PYTHON_VERSIONS = $(shell echo "2.6 2.6-ucs2 2.7 2.7-ucs2                 \
                                     3.1 3.1-ucs2 3.2 3.2-ucs2                 \
-                                    3.3 3.4 3.5 3.6 3.7 3.8 3.9")
+                                    3.3 3.4 3.5 3.6 3.7 3.8 3.9 3.10")
 
 
 build-debian:
