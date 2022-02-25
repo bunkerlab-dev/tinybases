@@ -3,7 +3,6 @@
 FROM --platform=${TARGETPLATFORM} debian:bullseye-slim AS host
 
 # Set environment variables.
-ENV DEBIAN_ARCHIVE=http://archive.debian.org/debian
 ENV LANG=POSIX
 ENV LANGUAGE=POSIX
 ENV LC_ALL=POSIX
@@ -49,6 +48,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
     esac;                                                                     \
     case "${VERSION}" in                                                      \
         4|etch)                                                               \
+            ARCHIVE=http://archive.debian.org/debian                          \
             VERSION=etch                                                      \
             INCLUDE=$(echo "                                                  \
                 dash                                                          \
@@ -76,6 +76,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
             " | xargs)                                                        \
         ;;                                                                    \
         5|lenny)                                                              \
+            ARCHIVE=http://archive.debian.org/debian                          \
             VERSION=lenny                                                     \
             INCLUDE=$(echo "                                                  \
                 dash                                                          \
@@ -105,6 +106,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
             " | xargs)                                                        \
         ;;                                                                    \
         6|squeeze)                                                            \
+            ARCHIVE=http://archive.debian.org/debian                          \
             VERSION=squeeze                                                   \
             INCLUDE=$(echo "                                                  \
                 dash                                                          \
@@ -130,6 +132,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
             " | xargs)                                                        \
         ;;                                                                    \
         7|wheezy)                                                             \
+            ARCHIVE=http://archive.debian.org/debian                          \
             VERSION=wheezy                                                    \
             INCLUDE=$(echo "                                                  \
                 dash                                                          \
@@ -157,6 +160,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
             " | xargs)                                                        \
         ;;                                                                    \
         8|jessie)                                                             \
+            ARCHIVE=http://archive.debian.org/debian                          \
             VERSION=jessie                                                    \
             INCLUDE=$(echo "                                                  \
                 dash                                                          \
@@ -185,10 +189,35 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 util-linux                                                    \
             " | xargs)                                                        \
         ;;                                                                    \
+        9|stretch)                                                            \
+            ARCHIVE=http://deb.debian.org/debian                              \
+            VERSION=stretch                                                   \
+            INCLUDE=$(echo "                                                  \
+                dash                                                          \
+                patch                                                         \
+            ")                                                                \
+            EXCLUDE=$(echo "                                                  \
+                bsdutils                                                      \
+                e2fslibs                                                      \
+                e2fsprogs                                                     \
+                hostname                                                      \
+                libblkid1                                                     \
+                libfdisk1                                                     \
+                libmount1                                                     \
+                libsmartcols1                                                 \
+                libss2                                                        \
+                libuuid1                                                      \
+                mount                                                         \
+                ncurses-base                                                  \
+                ncurses-bin                                                   \
+                sysvinit-utils                                                \
+                util-linux                                                    \
+            " | xargs)                                                        \
+        ;;                                                                    \
     esac;                                                                     \
     debootstrap --arch=${ARCH} --variant=minbase --no-check-gpg               \
                 --exclude="${EXCLUDE}" --include="${INCLUDE}"                 \
-                ${VERSION} ${CHROOT} ${DEBIAN_ARCHIVE}
+                ${VERSION} ${CHROOT} ${ARCHIVE}
 
 # Copy `/etc/profile` from outside and delete root profiles in target.
 COPY files/etc/profile ${CHROOT}/etc/profile
@@ -204,11 +233,17 @@ COPY files/etc/apt ${CHROOT}/etc/apt
 # Add backports repository to target.
 RUN chroot ${CHROOT} sh -c '                                                  \
     distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)       \
-    ; remote=${DEBIAN_ARCHIVE}$(test ${VERSION} -ge 7 && echo || echo "-backports") \
-    ; echo "deb ${remote} ${distro_name}-backports main"                      \
-        >> /etc/apt/sources.list                                              \
-    ; apt-key adv --recv-keys --keyserver keyserver.ubuntu.com                \
-        EA8E8B2116BA136C                                                      \
+    ; case ${VERSION} in                                                      \
+        4|5|6) ARCHIVE=http://archive.debian.org/debian-backports ;;          \
+        7|8)   ARCHIVE=http://archive.debian.org/debian           ;;          \
+        9)     ARCHIVE=http://deb.debian.org/debian               ;;          \
+      esac                                                                    \
+    ; if [ ${VERSION} -lt 9 ]; then                                           \
+        echo "deb ${ARCHIVE} ${distro_name}-backports main"                   \
+          >> /etc/apt/sources.list                                            \
+        ; apt-key adv --recv-keys --keyserver keyserver.ubuntu.com            \
+            EA8E8B2116BA136C                                                  \
+    ; fi                                                                      \
 '
 
 # Replace bash with dash (cheat the system with a symlink if needed).
@@ -232,6 +267,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
         6) pkgs="${pkgs} libdb4.8" ;;                                         \
         7) pkgs="${pkgs} libdb5.1" ;;                                         \
         8) pkgs="${pkgs} libdb5.3" ;;                                         \
+        9) pkgs=""                 ;;                                         \
     esac                                                                      \
     ; echo "#! /bin/sh" > /var/lib/dpkg/info/libpam-runtime.prerm             \
     ; echo "Yes, do as I say!" |                                              \
@@ -243,6 +279,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
     pkgs="passwd"                                                             \
     ; case "${VERSION}" in                                                    \
         7|8) pkgs="libsemanage-common libsemanage1 libustr-1.0-1" ;;          \
+        9)   pkgs="libtinfo5"                                     ;;          \
     esac                                                                      \
     ; echo "Yes, do as I say!" |                                              \
         apt-get remove --purge -y --force-yes ${pkgs}                         \
