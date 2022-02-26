@@ -232,7 +232,8 @@ COPY files/etc/apt ${CHROOT}/etc/apt
 
 # Add backports repository to target.
 RUN chroot ${CHROOT} sh -c '                                                  \
-    distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)       \
+    chmod 777 /tmp                                                            \
+    ; distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)     \
     ; case ${VERSION} in                                                      \
         4|5|6) ARCHIVE=http://archive.debian.org/debian-backports ;;          \
         7|8)   ARCHIVE=http://archive.debian.org/debian           ;;          \
@@ -352,6 +353,7 @@ ENV TZ=UTC
 # Copy rootfs from host.
 ARG CHROOT="/mnt/chroot"
 COPY --from=host ${CHROOT} /
+RUN chmod 777 /tmp
 
 # Launch shell.
 CMD ["sh"]
