@@ -13,14 +13,14 @@ packages as well as other bulky files (e.g. documentation).
 
 ## Usage
 
-Given a Debian version `X` (from 4 to 8), you can run an interactive
+Given a Debian version `X` (from 4 to 9), you can run an interactive
 session as follows:
 ```sh
 docker run --rm -it tinybases/debian:X
 ```
 
-Given a Python version `X.Y` (from 2.6 to 3.9) and a Debian version `Z`
-(from 4 to 8), you can run an interactive session as follows:
+Given a Python version `X.Y` (from 2.6 to 3.10) and a Debian version `Z`
+(from 4 to 9), you can run an interactive session as follows:
 ```sh
 docker run --rm -it pylegacy/python:X.Y-debian-Z
 ```
@@ -34,13 +34,14 @@ repositories [tinybases/x86-debian], [tinybases/x64-debian],
 Below you find the list of symbols available in the Debian-based Docker
 images:
 
-| Image     | GLIBC   | CXXABI  | GLIBCXX  | GCC    |
-|-----------|---------|---------|----------|--------|
-| Debian 4  | ≤ 2.3.4 | ≤ 1.3.1 | ≤ 3.4.8  | 4.1.2  |
-| Debian 5  | ≤ 2.7   | ≤ 1.3.2 | ≤ 3.4.10 | 4.3.2  |
-| Debian 6  | ≤ 2.11  | ≤ 1.3.3 | ≤ 3.4.13 | 4.4.5  |
-| Debian 7  | ≤ 2.13  | ≤ 1.3.6 | ≤ 3.4.17 | 4.7.2  |
-| Debian 8  | ≤ 2.18  | ≤ 1.3.8 | ≤ 3.4.20 | 4.9.2  |
+| Image     | GLIBC   | CXXABI   | GLIBCXX  | GCC   |
+|-----------|---------|----------|----------|-------|
+| Debian 4  | ≤ 2.3.4 | ≤ 1.3.1  | ≤ 3.4.8  | 4.1.2 |
+| Debian 5  | ≤ 2.7   | ≤ 1.3.2  | ≤ 3.4.10 | 4.3.2 |
+| Debian 6  | ≤ 2.11  | ≤ 1.3.3  | ≤ 3.4.13 | 4.4.5 |
+| Debian 7  | ≤ 2.13  | ≤ 1.3.6  | ≤ 3.4.17 | 4.7.2 |
+| Debian 8  | ≤ 2.18  | ≤ 1.3.8  | ≤ 3.4.20 | 4.9.2 |
+| Debian 9  | ≤ 2.24  | ≤ 1.3.10 | ≤ 3.4.22 | 6.3.0 |
 
 The former list can be obtained by running the following code snippet
 inside each Docker image:
