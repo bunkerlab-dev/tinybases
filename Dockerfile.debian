@@ -256,6 +256,9 @@ RUN chroot ${CHROOT} sh -c '                                                  \
         >> /etc/apt/sources.list                                              \
 '
 
+# Upgrade target packages if possible.
+RUN chroot ${CHROOT} sh -c '                                                  \
+    apt-get update && apt-get upgrade -y && apt-get clean                     \
 '
 
 # Replace bash with dash (cheat the system with a symlink if needed).
