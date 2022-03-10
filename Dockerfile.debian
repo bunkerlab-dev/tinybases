@@ -219,32 +219,43 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 --exclude="${EXCLUDE}" --include="${INCLUDE}"                 \
                 ${VERSION} ${CHROOT} ${ARCHIVE}
 
+# Copy host timezone to target.
+RUN echo ${TZ} > ${CHROOT}/etc/timezone
+
+# Ensure that the final `/tmp` folder has the right permissions.
+RUN chmod 777 ${CHROOT}/tmp
+
 # Copy `/etc/profile` from outside and delete root profiles in target.
 COPY files/etc/profile ${CHROOT}/etc/profile
 RUN rm -f ${CHROOT}/root/.profile
 RUN rm -f ${CHROOT}/root/.bashrc
 
-# Copy host timezone to target.
-RUN echo ${TZ} > ${CHROOT}/etc/timezone
-
 # Add special configuration for `apt`.
 COPY files/etc/apt ${CHROOT}/etc/apt
 
+# Add updates repository to target.
+RUN chroot ${CHROOT} sh -c '                                                  \
+    distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)       \
+    ; case ${VERSION} in                                                      \
+        4|5|6|7) ARCHIVE=http://archive.debian.org/debian-security ;;         \
+        8|9)     ARCHIVE=http://deb.debian.org/debian-security ;;             \
+      esac                                                                    \
+    ; echo "deb ${ARCHIVE} ${distro_name}/updates main"                       \
+        >> /etc/apt/sources.list                                              \
+'
+
 # Add backports repository to target.
 RUN chroot ${CHROOT} sh -c '                                                  \
-    chmod 777 /tmp                                                            \
-    ; distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)     \
+    distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)       \
     ; case ${VERSION} in                                                      \
         4|5|6) ARCHIVE=http://archive.debian.org/debian-backports ;;          \
         7|8)   ARCHIVE=http://archive.debian.org/debian           ;;          \
         9)     ARCHIVE=http://deb.debian.org/debian               ;;          \
       esac                                                                    \
-    ; if [ ${VERSION} -lt 9 ]; then                                           \
-        echo "deb ${ARCHIVE} ${distro_name}-backports main"                   \
-          >> /etc/apt/sources.list                                            \
-        ; apt-key adv --recv-keys --keyserver keyserver.ubuntu.com            \
-            EA8E8B2116BA136C                                                  \
-    ; fi                                                                      \
+    ; echo "deb ${ARCHIVE} ${distro_name}-backports main"                     \
+        >> /etc/apt/sources.list                                              \
+'
+
 '
 
 # Replace bash with dash (cheat the system with a symlink if needed).
