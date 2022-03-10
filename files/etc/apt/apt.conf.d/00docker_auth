@@ -1,4 +1,0 @@
-Acquire::Check-Valid-Until false;
-APT::Get::AllowUnauthenticated true;
-APT::Install-Recommends false;
-APT::Install-Suggests false;
