@@ -160,7 +160,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
             " | xargs)                                                        \
         ;;                                                                    \
         8|jessie)                                                             \
-            ARCHIVE=http://archive.debian.org/debian                          \
+            ARCHIVE=http://deb.debian.org/debian                              \
             VERSION=jessie                                                    \
             INCLUDE=$(echo "                                                  \
                 dash                                                          \
