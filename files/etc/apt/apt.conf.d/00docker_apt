@@ -1,15 +1,11 @@
-# Do not install recommendations and suggestions by default.
 APT::Install-Recommends "false";
 APT::Install-Suggests "false";
 APT::AutoRemove::SuggestsImportant "false";
 
-# Do not check authentication.
 APT::Get::AllowUnauthenticated "true";
 Acquire::Check-Valid-Until "false";
 
-# Do not fetch translations files.
 Acquire::Languages "none";
 
-# Store indices in compressed format.
 Acquire::GzipIndexes "true";
 Acquire::CompressionTypes::Order:: "gz";
