@@ -345,6 +345,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
         /var/log                                                              \
         -type f | xargs rm -f                                                 \
     ; find / -regex ".*~$" | xargs rm -rf                                     \
+    ; find / -regex ".*-$" | xargs rm -rf                                     \
     # Clean docs, lintian files, locales and manpages.
     ; sh /etc/apt/apt.conf.d.scripts/99docker_dpkg_postinvoke.sh              \
     # Specific removal for Debian Lenny.
