@@ -34,7 +34,7 @@ repositories [tinybases/x86-debian], [tinybases/x64-debian],
 Below you find the list of symbols available in the Debian-based Docker
 images:
 
-| Image     | GLIBC   | CXXABI   | GLIBCXX  | GCC   |
+| &nbsp; &nbsp; &nbsp; Image &nbsp; &nbsp; &nbsp; | &nbsp; GLIBC &nbsp; | CXXABI   | GLIBCXX  | GCC   |
 |-----------|---------|----------|----------|-------|
 | Debian 4  | ≤ 2.3.4 | ≤ 1.3.1  | ≤ 3.4.8  | 4.1.2 |
 | Debian 5  | ≤ 2.7   | ≤ 1.3.2  | ≤ 3.4.10 | 4.3.2 |
@@ -52,6 +52,16 @@ find /usr/lib* -name "libstdc++.so.6" | xargs strings | grep "^CXXABI_"
 find /usr/lib* -name "libstdc++.so.6" | xargs strings | grep "^GLIBCXX_"
 /usr/bin/gcc --version
 ```
+
+For comparison, the following table shows the list of symbols available
+in CentOS and Rocky Linux:
+
+| &nbsp; &nbsp; &nbsp; Image &nbsp; &nbsp; &nbsp; | &nbsp; GLIBC &nbsp; | CXXABI   | GLIBCXX  | GCC   |
+|----------------|---------|----------|----------|-------|
+| CentOS 5       | ≤ 2.5   | ≤ 1.3.1  | ≤ 3.4.8  | 4.1.2 |
+| CentOS 6       | ≤ 2.12  | ≤ 1.3.3  | ≤ 3.4.13 | 4.4.7 |
+| CentOS 7       | ≤ 2.17  | ≤ 1.3.7  | ≤ 3.4.19 | 4.8.5 |
+| Rocky Linux 8  | ≤ 2.28  | ≤ 1.3.11 | ≤ 3.4.25 | 8.5.0 |
 
 
 [Docker]:
