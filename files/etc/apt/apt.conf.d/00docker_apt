@@ -4,6 +4,7 @@ APT::AutoRemove::SuggestsImportant "false";
 
 APT::Get::AllowUnauthenticated "true";
 Acquire::Check-Valid-Until "false";
+Acquire::Retries "3";
 
 Acquire::Languages "none";
 
