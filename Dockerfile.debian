@@ -279,13 +279,16 @@ RUN chroot ${CHROOT} sh -c '                                                  \
 
 # Remove passwd if still there.
 RUN chroot ${CHROOT} sh -c '                                                  \
-    pkgs="passwd"                                                             \
-    ; case "${VERSION}" in                                                    \
+    case "${VERSION}" in                                                      \
+        4|5) pkgs="passwd"                                        ;;          \
         7|8) pkgs="libsemanage-common libsemanage1 libustr-1.0-1" ;;          \
         9)   pkgs="libtinfo5"                                     ;;          \
+        *)   pkgs=""                                              ;;          \
     esac                                                                      \
-    ; echo "Yes, do as I say!" |                                              \
-        apt-get remove --purge -y --force-yes ${pkgs}                         \
+    ; if [ ! -z "${pkgs}" ]; then                                             \
+        echo "Yes, do as I say!" |                                            \
+            apt-get remove --purge -y --force-yes ${pkgs};                    \
+    fi                                                                        \
 '
 
 # Copy `getopt` program manually extracted from `util-linux`.
