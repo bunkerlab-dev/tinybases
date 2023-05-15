@@ -19,7 +19,10 @@ RUN cd /home                                                                  \
     && ./pmm remove pyenv-dev gcc-full                                        \
     && if [ "${BASE}" = "debian:4" ]; then ./pmm remove aptitude; fi          \
     && cd ..                                                                  \
-    && rm -rf ./*
+    && rm -rf ./*                                                             \
+    && unset pmm_remote                                                       \
+    && unset pmm_remote_pointer                                               \
+    && unset pmm_remote_version
 
 # Prepare Python environment.
 ENV PYENV_ROOT=/opt/pyenv
