@@ -13,8 +13,8 @@ find                                                                          \
     -type d -empty | xargs rm -rf
 # Remove broken symlinks in docs.
 find                                                                          \
-    /usr/share/doc -type l                                                    \
-    ! -exec test -e {} \; -print | xargs rm -rf
+    /usr/share/doc                                                            \
+    -type l ! -exec test -e {} \; -print | xargs rm -rf
 rm -rf /usr/share/groff/*
 rm -rf /usr/share/info/*
 
@@ -28,9 +28,6 @@ rm -rf /usr/share/locale/*
 # Clean manpages.
 rm -rf /usr/share/man/*
 rm -rf /var/cache/man
-
-# Remove backup files.
-find /var -type f -name "*-old" | xargs rm -rf
 
 # Undo dpkg cheat about `/bin/bash` if done during preinvoke script.
 if [ -L /bin/bash ]; then
