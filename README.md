@@ -54,14 +54,15 @@ find /usr/lib* -name "libstdc++.so.6" | xargs strings | grep "^GLIBCXX_"
 ```
 
 For comparison, the following table shows the list of symbols available
-in CentOS and Rocky Linux:
+in CentOS and AlmaLinux:
 
 | &nbsp; &nbsp; &nbsp; Image &nbsp; &nbsp; &nbsp; | &nbsp; GLIBC &nbsp; | CXXABI   | GLIBCXX  | GCC   |
-|----------------|---------|----------|----------|-------|
-| CentOS 5       | ≤ 2.5   | ≤ 1.3.1  | ≤ 3.4.8  | 4.1.2 |
-| CentOS 6       | ≤ 2.12  | ≤ 1.3.3  | ≤ 3.4.13 | 4.4.7 |
-| CentOS 7       | ≤ 2.17  | ≤ 1.3.7  | ≤ 3.4.19 | 4.8.5 |
-| Rocky Linux 8  | ≤ 2.28  | ≤ 1.3.11 | ≤ 3.4.25 | 8.5.0 |
+|-------------|---------|----------|----------|--------|
+| CentOS 5    | ≤ 2.5   | ≤ 1.3.1  | ≤ 3.4.8  |  4.1.2 |
+| CentOS 6    | ≤ 2.12  | ≤ 1.3.3  | ≤ 3.4.13 |  4.4.7 |
+| CentOS 7    | ≤ 2.17  | ≤ 1.3.7  | ≤ 3.4.19 |  4.8.5 |
+| AlmaLinux 8 | ≤ 2.28  | ≤ 1.3.11 | ≤ 3.4.25 |  8.5.0 |
+| AlmaLinux 9 | ≤ 2.34  | ≤ 1.3.13 | ≤ 3.4.29 | 11.3.1 |
 
 
 [Docker]:
