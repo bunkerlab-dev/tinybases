@@ -160,7 +160,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
             " | xargs)                                                        \
         ;;                                                                    \
         8|jessie)                                                             \
-            ARCHIVE=http://deb.debian.org/debian                              \
+            ARCHIVE=http://archive.debian.org/debian                          \
             VERSION=jessie                                                    \
             INCLUDE=$(echo "                                                  \
                 dash                                                          \
@@ -190,7 +190,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
             " | xargs)                                                        \
         ;;                                                                    \
         9|stretch)                                                            \
-            ARCHIVE=http://deb.debian.org/debian                              \
+            ARCHIVE=http://archive.debian.org/debian                          \
             VERSION=stretch                                                   \
             INCLUDE=$(echo "                                                  \
                 dash                                                          \
@@ -237,8 +237,8 @@ COPY files/etc/apt ${CHROOT}/etc/apt
 RUN chroot ${CHROOT} sh -c '                                                  \
     distro_name=$(cat /etc/apt/sources.list | head -n1 | cut -d" " -f3)       \
     ; case ${VERSION} in                                                      \
-        4|5|6|7) ARCHIVE=http://archive.debian.org/debian-security ;;         \
-        8|9)     ARCHIVE=http://deb.debian.org/debian-security ;;             \
+        4|5|6|7|8|9) ARCHIVE=http://archive.debian.org/debian-security ;;     \
+        *)           ARCHIVE=http://deb.debian.org/debian-security ;;         \
       esac                                                                    \
     ; echo "deb ${ARCHIVE} ${distro_name}/updates main"                       \
         >> /etc/apt/sources.list                                              \
