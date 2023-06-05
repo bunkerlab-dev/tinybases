@@ -336,10 +336,14 @@ RUN chroot ${CHROOT} sh -c '                                                  \
         /var/log                                                              \
         -type f | xargs rm -f                                                 \
     ; find / -regex ".*[~-]$" | xargs rm -rf                                  \
+    # Remove non-deterministic files.
+    ; rm -rf                                                                  \
+        /etc/apt/trustdb.gpg                                                  \
+        /var/cache/ldconfig/aux-cache                                         \
+    # Remove specific binary file on Debian Lenny.
+    ; rm -rf /usr/bin/oldfind                                                 \
     # Clean docs, lintian files, locales and manpages.
     ; sh /etc/apt/apt.conf.d.scripts/99docker_dpkg_postinvoke.sh              \
-    # Specific removal for Debian Lenny.
-    ; rm -rf /usr/bin/oldfind                                                 \
 '
 ###############################################################################
 
