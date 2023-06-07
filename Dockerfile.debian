@@ -27,8 +27,10 @@ RUN wget https://raw.githubusercontent.com/minos-org/minos-static/master/static-
     && rm static-get
 
 # Prepare target.
-ARG CHROOT="/mnt/chroot"
-RUN mkdir -p ${CHROOT}
+ENV CHTEMP="/mnt/chtemp"
+ENV CHROOT="/mnt/chroot"
+RUN mkdir -p "${CHTEMP}/tmp" && chmod +xt "${CHTEMP}/tmp"
+RUN mkdir -p "${CHROOT}/tmp" && chmod +xt "${CHROOT}/tmp"
 
 # Apply debootstrap.
 ARG ARCH
@@ -222,9 +224,6 @@ RUN case "${TARGETPLATFORM}" in                                               \
 # Copy host timezone to target.
 RUN echo ${TZ} > ${CHROOT}/etc/timezone
 
-# Ensure that the final `/tmp` folder has the right permissions.
-RUN chmod 777 ${CHROOT}/tmp
-
 # Copy `/etc/profile` from outside and delete root profiles in target.
 COPY files/etc/profile ${CHROOT}/etc/profile
 RUN rm -f ${CHROOT}/root/.profile
@@ -345,6 +344,12 @@ RUN chroot ${CHROOT} sh -c '                                                  \
     # Clean docs, lintian files, locales and manpages.
     ; sh /etc/apt/apt.conf.d.scripts/99docker_dpkg_postinvoke.sh              \
 '
+
+# Fix non-determinism due to modification times.
+ARG SOURCE_DATE_EPOCH
+RUN sed -i 's/^\(\([^:]*:\)\{2\}\)\([^:]*:\)\(.*\)$/\1'"$((${SOURCE_DATE_EPOCH} / 86400))"':\4/g' ${CHROOT}/etc/shadow
+RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -c -h -a --date "@${SOURCE_DATE_EPOCH}"
+RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -c -h -m --date "@${SOURCE_DATE_EPOCH}"
 ###############################################################################
 
 
@@ -360,9 +365,8 @@ ENV LC_ALL=POSIX
 ENV TZ=UTC
 
 # Copy rootfs from host.
-ARG CHROOT="/mnt/chroot"
-COPY --from=host ${CHROOT} /
-RUN chmod 777 /tmp
+COPY --from=host /mnt/chroot /
+COPY --from=host --chmod=777 /mnt/chtemp /
 
 # Launch shell.
 CMD ["sh"]
