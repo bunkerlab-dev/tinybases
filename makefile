@@ -25,6 +25,7 @@ build-debian:
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
 	        --push                                                        \
+	        --no-cache                                                    \
 	        --provenance false                                            \
 	        --file Dockerfile.debian                                      \
 	        --platform "$$plat"                                           \
@@ -61,6 +62,7 @@ build-python:
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
 	        --push                                                        \
+	        --no-cache                                                    \
 	        --provenance false                                            \
 	        --file Dockerfile.python                                      \
 	        --platform "$$plat"                                           \
