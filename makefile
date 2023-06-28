@@ -25,8 +25,9 @@ build-debian:
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
 	        --push                                                        \
+	        --provenance false                                            \
 	        --file Dockerfile.debian                                      \
-	        --platform="$$plat"                                           \
+	        --platform "$$plat"                                           \
 	        --tag "$$tag"                                                 \
 	        --build-arg VERSION="$(version)";                             \
 	fi
@@ -60,8 +61,9 @@ build-python:
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
 	        --push                                                        \
+	        --provenance false                                            \
 	        --file Dockerfile.python                                      \
-	        --platform="$$plat"                                           \
+	        --platform "$$plat"                                           \
 	        --tag "$$tag"                                                 \
 	        --build-arg BASE="$(base)"                                    \
 	        --build-arg VERSION="$(version)";                             \
