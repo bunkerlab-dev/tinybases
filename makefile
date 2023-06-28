@@ -21,6 +21,15 @@ build-debian:
 	        plat="linux/386";                                             \
 	        tag="tinybases/x86-debian:$$version";                         \
 	    fi;                                                               \
+	    case "$(version)" in                                              \
+	        4|etch)    SOURCE_DATE_EPOCH=1274486400 ;;                    \
+	        5|lenny)   SOURCE_DATE_EPOCH=1331337600 ;;                    \
+	        6|squeeze) SOURCE_DATE_EPOCH=1405728000 ;;                    \
+	        7|wheezy)  SOURCE_DATE_EPOCH=1464998400 ;;                    \
+	        8|jessie)  SOURCE_DATE_EPOCH=1529712000 ;;                    \
+	        9|squeeze) SOURCE_DATE_EPOCH=1595030400 ;;                    \
+	        *)         SOURCE_DATE_EPOCH=0          ;;                    \
+	    esac;                                                             \
 	    echo "Building $$tag...";                                         \
 	    docker buildx create --use;                                       \
 	    docker buildx build .                                             \
@@ -30,7 +39,8 @@ build-debian:
 	        --file Dockerfile.debian                                      \
 	        --platform "$$plat"                                           \
 	        --tag "$$tag"                                                 \
-	        --build-arg VERSION="$(version)";                             \
+	        --build-arg VERSION="$(version)"                              \
+	        --build-arg SOURCE_DATE_EPOCH="$$SOURCE_DATE_EPOCH";          \
 	fi
 
 
