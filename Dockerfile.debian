@@ -346,7 +346,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
 '
 
 # Fix non-determinism due to modification times.
-ARG SOURCE_DATE_EPOCH
+ARG SOURCE_DATE_EPOCH=0
 RUN sed -i 's/^\(\([^:]*:\)\{2\}\)\([^:]*:\)\(.*\)$/\1'"$((${SOURCE_DATE_EPOCH} / 86400))"':\4/g' ${CHROOT}/etc/shadow
 RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -c -h -a --date "@${SOURCE_DATE_EPOCH}"
 RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -c -h -m --date "@${SOURCE_DATE_EPOCH}"
