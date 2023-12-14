@@ -270,7 +270,8 @@ RUN chroot ${CHROOT} sh -c '                                                  \
 
 # Upgrade target packages if possible.
 RUN chroot ${CHROOT} sh -c '                                                  \
-    apt-get update && apt-get upgrade -y && apt-get clean                     \
+    chmod 1777 /tmp                                                           \
+    ; apt-get update && apt-get upgrade -y && apt-get clean                   \
 '
 
 # Replace bash with dash (cheat the system with a symlink if needed).
@@ -394,7 +395,7 @@ ENV TZ=UTC
 
 # Copy rootfs from host.
 COPY --from=host /mnt/chroot /
-COPY --from=host --chmod=777 /mnt/chtemp /
+COPY --from=host --chmod=1777 /mnt/chtemp /
 
 # Launch shell.
 CMD ["sh"]
