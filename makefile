@@ -28,6 +28,7 @@ build-debian:
 	        7|wheezy)  SOURCE_DATE_EPOCH=1464998400 ;;                    \
 	        8|jessie)  SOURCE_DATE_EPOCH=1529712000 ;;                    \
 	        9|squeeze) SOURCE_DATE_EPOCH=1595030400 ;;                    \
+	        10|buster) SOURCE_DATE_EPOCH=1656547200 ;;                    \
 	        *)         SOURCE_DATE_EPOCH=0          ;;                    \
 	    esac;                                                             \
 	    echo "Building $$tag...";                                         \

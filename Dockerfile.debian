@@ -216,6 +216,31 @@ RUN case "${TARGETPLATFORM}" in                                               \
                 util-linux                                                    \
             " | xargs)                                                        \
         ;;                                                                    \
+        10|buster)                                                            \
+            ARCHIVE=http://deb.debian.org/debian                              \
+            VERSION=buster                                                    \
+            INCLUDE=$(echo "                                                  \
+                dash                                                          \
+                patch                                                         \
+            ")                                                                \
+            EXCLUDE=$(echo "                                                  \
+                bsdutils                                                      \
+                e2fsprogs                                                     \
+                fdisk                                                         \
+                hostname                                                      \
+                libblkid1                                                     \
+                libfdisk1                                                     \
+                libmount1                                                     \
+                libsmartcols1                                                 \
+                libss2                                                        \
+                libuuid1                                                      \
+                mount                                                         \
+                ncurses-base                                                  \
+                ncurses-bin                                                   \
+                sysvinit-utils                                                \
+                util-linux                                                    \
+            " | xargs)                                                        \
+        ;;                                                                    \
     esac;                                                                     \
     debootstrap --arch=${ARCH} --variant=minbase --no-check-gpg               \
                 --exclude="${EXCLUDE}" --include="${INCLUDE}"                 \
@@ -269,7 +294,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
         6) pkgs="${pkgs} libdb4.8" ;;                                         \
         7) pkgs="${pkgs} libdb5.1" ;;                                         \
         8) pkgs="${pkgs} libdb5.3" ;;                                         \
-        9) pkgs=""                 ;;                                         \
+        *) pkgs=""                 ;;                                         \
     esac                                                                      \
     ; echo "#! /bin/sh" > /var/lib/dpkg/info/libpam-runtime.prerm             \
     ; echo "Yes, do as I say!" |                                              \
@@ -282,6 +307,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
         4|5) pkgs="passwd"                                        ;;          \
         7|8) pkgs="libsemanage-common libsemanage1 libustr-1.0-1" ;;          \
         9)   pkgs="libtinfo5"                                     ;;          \
+        10)  pkgs="libtinfo6"                                     ;;          \
         *)   pkgs=""                                              ;;          \
     esac                                                                      \
     ; if [ ! -z "${pkgs}" ]; then                                             \
