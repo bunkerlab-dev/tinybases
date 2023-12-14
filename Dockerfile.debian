@@ -391,6 +391,7 @@ ENV ENV="/etc/profile"
 ENV LANG=POSIX
 ENV LANGUAGE=POSIX
 ENV LC_ALL=POSIX
+ENV PAGER=cat
 ENV TZ=UTC
 
 # Copy rootfs from host.
