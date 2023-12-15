@@ -48,9 +48,9 @@ The former list can be obtained by running the following code snippet
 inside each Docker image:
 ```sh
 apt-get update && apt-get install -y binutils gcc
-find /lib* -name "libc.so.6" | xargs strings | grep "^GLIBC_"
-find /usr/lib* -name "libstdc++.so.6" | xargs strings | grep "^CXXABI_"
-find /usr/lib* -name "libstdc++.so.6" | xargs strings | grep "^GLIBCXX_"
+find -L /lib* -name "libc.so.6" | xargs strings | grep "^GLIBC_"
+find -L /usr/lib* -name "libstdc++.so.6" | xargs strings | grep "^CXXABI_"
+find -L /usr/lib* -name "libstdc++.so.6" | xargs strings | grep "^GLIBCXX_"
 /usr/bin/gcc --version
 ```
 
