@@ -337,8 +337,10 @@ COPY files/etc/wgetrc ${CHROOT}/etc/wgetrc
 
 # Remove bulky files in target unless mandatory.
 RUN chroot ${CHROOT} sh -c '                                                  \
+    # Clean docs, lintian files, locales and manpages.
+    sh /etc/apt/apt.conf.d.scripts/99docker_dpkg_postinvoke.sh                \
     # Remove unused folders.
-      rm -rf                                                                  \
+    ; rm -rf                                                                  \
         /etc/cron.*                                                           \
         /etc/logrotate.d                                                      \
         /usr/share/emacs                                                      \
@@ -363,8 +365,8 @@ RUN chroot ${CHROOT} sh -c '                                                  \
     ; rm -rf /usr/bin/oldfind                                                 \
     # Remove specific contents of `resolv.conf` and leave it empty.
     ; cp /dev/null /etc/resolv.conf                                           \
-    # Clean docs, lintian files, locales and manpages.
-    ; sh /etc/apt/apt.conf.d.scripts/99docker_dpkg_postinvoke.sh              \
+    # Remove specific system folder contents.
+    ; rm -rf /dev/* /proc/* /sys/*                                            \
 '
 
 # Fix non-determinism due to modification times.
