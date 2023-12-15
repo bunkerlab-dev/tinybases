@@ -42,6 +42,7 @@ images:
 | Debian 7  | ≤ 2.13  | ≤ 1.3.6  | ≤ 3.4.17 | 4.7.2 |
 | Debian 8  | ≤ 2.18  | ≤ 1.3.8  | ≤ 3.4.20 | 4.9.2 |
 | Debian 9  | ≤ 2.24  | ≤ 1.3.10 | ≤ 3.4.22 | 6.3.0 |
+| Debian 10 | ≤ 2.28  | ≤ 1.3.11 | ≤ 3.4.25 | 8.3.0 |
 
 The former list can be obtained by running the following code snippet
 inside each Docker image:
