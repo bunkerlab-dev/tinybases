@@ -14,28 +14,22 @@ RUN apt-get update && apt-get install -y debootstrap xz-utils && apt-get clean
 # Install host certificates.
 RUN apt-get update && apt-get install -y wget ca-certificates && apt-get clean
 
-# Retrieve a static `wget`.
-RUN wget https://raw.githubusercontent.com/minos-org/minos-static/master/static-get \
-    && chmod +x static-get                                                    \
-    && mkdir -p /opt/wget                                                     \
-    && ./static-get wget                                                      \
-    && tar -xf wget.tar.xz --directory /opt/wget                              \
-    && rm -rf /opt/wget/etc /opt/wget/man                                     \
-    && rm -rf /opt/wget/doc/wget/AUTHORS                                      \
-    && rm -rf /opt/wget/doc/wget/NEWS                                         \
-    && rm wget.tar.xz                                                         \
-    && rm static-get
-
 # Prepare target.
 ENV CHTEMP="/mnt/chtemp"
 ENV CHROOT="/mnt/chroot"
-RUN mkdir -p "${CHTEMP}/tmp" && chmod +xt "${CHTEMP}/tmp"
-RUN mkdir -p "${CHROOT}/tmp" && chmod +xt "${CHROOT}/tmp"
+ENV CHUSER="/mnt/chuser"
+ENV CHCERT="/mnt/chcert"
+RUN mkdir -p "${CHTEMP}/tmp" && chmod 1777 "${CHTEMP}/tmp"
+RUN mkdir -p "${CHROOT}/tmp" && chmod 1777 "${CHROOT}/tmp"
+RUN mkdir -p "${CHUSER}/usr/local/bin"
+RUN mkdir -p "${CHCERT}/etc/ssl"
 
-# Apply debootstrap.
+# Define arguments.
 ARG ARCH
 ARG VERSION
 ARG TARGETPLATFORM
+
+# Apply debootstrap.
 RUN case "${TARGETPLATFORM}" in                                               \
         linux/386)                                                            \
             ARCH=i386                                                         \
@@ -337,19 +331,9 @@ RUN chroot ${CHROOT} sh -c '                                                  \
     fi                                                                        \
 '
 
-# Inject host certificates into target.
-RUN mkdir -p ${CHROOT}/etc/ssl/certs
-RUN cp /etc/ssl/certs/ca-certificates.crt ${CHROOT}/etc/ssl/cert.pem
-
-# Configure CA certificates for hypothetical `git` and `wget`.
+# Configure CA certificates location for hypothetical `git` and `wget`.
 COPY files/etc/gitconfig ${CHROOT}/etc/gitconfig
 COPY files/etc/wgetrc ${CHROOT}/etc/wgetrc
-
-# Inject the static `wget` in the host.
-RUN cp -R /opt/wget ${CHROOT}/opt/wget                                        \
-    && chroot ${CHROOT} sh -c '                                               \
-        ln -s /opt/wget/bin/wget /usr/local/bin/wget                          \
-'
 
 # Remove bulky files in target unless mandatory.
 RUN chroot ${CHROOT} sh -c '                                                  \
@@ -386,8 +370,36 @@ RUN chroot ${CHROOT} sh -c '                                                  \
 # Fix non-determinism due to modification times.
 ARG SOURCE_DATE_EPOCH=0
 RUN sed -i 's/^\(\([^:]*:\)\{2\}\)\([^:]*:\)\(.*\)$/\1'"$((${SOURCE_DATE_EPOCH} / 86400))"':\4/g' ${CHROOT}/etc/shadow
-RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -c -h -a --date "@${SOURCE_DATE_EPOCH}"
-RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -c -h -m --date "@${SOURCE_DATE_EPOCH}"
+RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
+
+# Retrieve CA certificates for later.
+RUN true                                                                      \
+    ; CALINK=https://curl.se/ca/cacert-2023-12-12.pem                         \
+    ; CAFILE=${CHCERT}/etc/ssl/cert.pem                                       \
+    ; wget -O "${CAFILE}" -S "${CALINK}" && chmod 444 "${CAFILE}"             \
+    ; find "${CHCERT}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
+
+# Retrieve static `wget` for later.
+RUN case "${TARGETPLATFORM}" in                                               \
+        linux/386)                                                            \
+            WGORIG=wget_busybox_amd_x86_64_gcc_Linux                          \
+        ;;                                                                    \
+        linux/amd64)                                                          \
+            WGORIG=wget_busybox_i686_x86_gcc_Linux                            \
+        ;;                                                                    \
+        *)                                                                    \
+            echo "E: unsupported target platform: ${TARGETPLATFORM}"          \
+            exit 1                                                            \
+        ;;                                                                    \
+    esac                                                                      \
+    ; ROOTBASE=https://raw.githubusercontent.com/Azathothas/Static-Binaries   \
+    ; ROOTVERS=baseutils_2023_12_15_07_02_58_AM                               \
+    ; WGNAME=wget                                                             \
+    ; WGLINK=${ROOTBASE}/${ROOTVERS}/${WGNAME}/${WGORIG}                      \
+    ; cd "${CHUSER}/usr/local/bin"                                            \
+    ; wget -O "${WGNAME}" -S "${WGLINK}" && chmod 777 "${WGNAME}"             \
+    ; find "${CHUSER}" -type f | xargs touch -cham -d "@1702623778"           \
+    ; find "${CHUSER}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 ###############################################################################
 
 
@@ -406,6 +418,12 @@ ENV TZ=UTC
 # Copy rootfs from host.
 COPY --from=host /mnt/chroot /
 COPY --from=host --chmod=1777 /mnt/chtemp /
+
+# Inject the static `wget` into target.
+COPY --from=host /mnt/chuser /
+
+# Inject the CA certificates into target.
+COPY --from=host /mnt/chcert /
 
 # Launch shell.
 CMD ["sh"]
