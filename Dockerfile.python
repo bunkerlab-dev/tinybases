@@ -13,6 +13,7 @@ RUN cd /home                                                                  \
     && cd bin                                                                 \
     && chmod +x pmm                                                           \
     && ./pmm install bash                                                     \
+    && if [ "${BASE}" = "debian:10" ]; then ./pmm install ncurses-base; fi    \
     && if [ "${BASE}" = "debian:4" ]; then ./pmm install aptitude; fi         \
     && ./pmm install gcc-full pyenv-dev pyenv                                 \
     && ./pmm install python-${VERSION}                                        \
