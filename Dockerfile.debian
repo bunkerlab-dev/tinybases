@@ -395,6 +395,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
     esac                                                                      \
     ; ROOTBASE="https://raw.githubusercontent.com/Azathothas/Static-Binaries" \
     ; ROOTVERS="baseutils_2023_12_15_07_02_58_AM"                             \
+    ; ROOTDATE=1702623778                                                     \
     ; CHBINDIR="${CHUSER}/usr/local/bin"                                      \
     ; CHDOCDIR="${CHUSER}/usr/local/share/doc"                                \
     ; WGBIN="$(echo $WGORIG | cut -d_ -f1)"                                   \
@@ -433,7 +434,7 @@ RUN case "${TARGETPLATFORM}" in                                               \
     echo "On Debian GNU/Linux systems, the complete text of the GNU General"                     ;\
     echo "Public License can be found in \`/usr/share/common-licenses/GPL-2'."                   ;\
   } > "${WGCPY}"                                                              \
-    ; find "${CHUSER}" -type f | xargs touch -cham -d "@1702623778"           \
+    ; find "${CHUSER}" -type f | xargs touch -cham -d "@${ROOTDATE}"       \
     ; find "${CHUSER}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 ###############################################################################
 
