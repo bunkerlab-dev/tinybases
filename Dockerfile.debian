@@ -370,7 +370,7 @@ RUN chroot ${CHROOT} sh -c '                                                  \
 # Fix non-determinism due to modification times.
 ARG SOURCE_DATE_EPOCH=0
 RUN sed -i 's/^\(\([^:]*:\)\{2\}\)\([^:]*:\)\(.*\)$/\1'"$((${SOURCE_DATE_EPOCH} / 86400))"':\4/g' ${CHROOT}/etc/shadow
-RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
+RUN find -L "${CHROOT}" "${CHTEMP}" | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 
 # Retrieve CA certificates for later.
 RUN true                                                                      \
@@ -378,7 +378,7 @@ RUN true                                                                      \
     ; CAFILE="${CHCERT}/etc/ssl/cert.pem"                                     \
     ; mkdir -p "$(dirname ${CAFILE})"                                         \
     ; wget -O "${CAFILE}" -S "${CALINK}" && chmod 444 "${CAFILE}"             \
-    ; find "${CHCERT}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
+    ; find -L "${CHCERT}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 
 # Retrieve static `wget` for later.
 RUN case "${TARGETPLATFORM}" in                                               \
@@ -434,8 +434,8 @@ RUN case "${TARGETPLATFORM}" in                                               \
     echo "On Debian GNU/Linux systems, the complete text of the GNU General"                     ;\
     echo "Public License can be found in \`/usr/share/common-licenses/GPL-2'."                   ;\
   } > "${WGCPY}"                                                              \
-    ; find "${CHUSER}" -type f | xargs touch -cham -d "@${ROOTDATE}"       \
-    ; find "${CHUSER}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
+    ; find -L "${CHUSER}" -type f | xargs touch -cham -d "@${ROOTDATE}"       \
+    ; find -L "${CHUSER}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 ###############################################################################
 
 
