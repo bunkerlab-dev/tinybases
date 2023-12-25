@@ -384,10 +384,10 @@ RUN true                                                                      \
 # Retrieve static `wget` for later.
 RUN case "${TARGETPLATFORM}" in                                               \
         linux/386)                                                            \
-            WGORIG=wget_busybox_amd_x86_64_gcc_Linux                          \
+            WGORIG="wget_busybox_i686_x86_gcc_Linux"                          \
         ;;                                                                    \
         linux/amd64)                                                          \
-            WGORIG=wget_busybox_i686_x86_gcc_Linux                            \
+            WGORIG="wget_busybox_amd_x86_64_gcc_Linux"                        \
         ;;                                                                    \
         *)                                                                    \
             echo "E: unsupported target platform: ${TARGETPLATFORM}"          \
