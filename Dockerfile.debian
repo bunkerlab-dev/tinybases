@@ -22,7 +22,6 @@ ENV CHCERT="/mnt/chcert"
 RUN mkdir -p "${CHTEMP}/tmp" && chmod 1777 "${CHTEMP}/tmp"
 RUN mkdir -p "${CHROOT}/tmp" && chmod 1777 "${CHROOT}/tmp"
 RUN mkdir -p "${CHUSER}/usr/local/bin"
-RUN mkdir -p "${CHCERT}/etc/ssl"
 
 # Define arguments.
 ARG ARCH
@@ -376,8 +375,9 @@ RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 
 # Retrieve CA certificates for later.
 RUN true                                                                      \
-    ; CALINK=https://curl.se/ca/cacert-2023-12-12.pem                         \
-    ; CAFILE=${CHCERT}/etc/ssl/cert.pem                                       \
+    ; CALINK="https://curl.se/ca/cacert-2023-12-12.pem"                       \
+    ; CAFILE="${CHCERT}/etc/ssl/cert.pem"                                     \
+    ; mkdir -p "$(dirname ${CAFILE})"                                         \
     ; wget -O "${CAFILE}" -S "${CALINK}" && chmod 444 "${CAFILE}"             \
     ; find "${CHCERT}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 
