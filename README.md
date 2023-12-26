@@ -13,14 +13,14 @@ packages as well as other bulky files (e.g. documentation).
 
 ## Usage
 
-Given a Debian version `X` (from 4 to 9), you can run an interactive
+Given a Debian version `X` (from 4 to 10), you can run an interactive
 session as follows:
 ```sh
 docker run --rm -it tinybases/debian:X
 ```
 
-Given a Python version `X.Y` (from 2.6 to 3.11) and a Debian version `Z`
-(from 4 to 9), you can run an interactive session as follows:
+Given a Python version `X.Y` (from 2.6 to 3.12) and a Debian version `Z`
+(from 4 to 10), you can run an interactive session as follows:
 ```sh
 docker run --rm -it pylegacy/python:X.Y-debian-Z
 ```
