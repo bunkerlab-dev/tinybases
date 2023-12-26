@@ -21,8 +21,6 @@ ENV CHUSER="/mnt/chuser"
 ENV CHCERT="/mnt/chcert"
 RUN mkdir -p "${CHTEMP}/tmp" && chmod 1777 "${CHTEMP}/tmp"
 RUN mkdir -p "${CHROOT}/tmp" && chmod 1777 "${CHROOT}/tmp"
-RUN mkdir -p "${CHUSER}/usr/local/bin"
-RUN mkdir -p "${CHCERT}/etc/ssl"
 
 # Define arguments.
 ARG ARCH
@@ -372,36 +370,72 @@ RUN chroot ${CHROOT} sh -c '                                                  \
 # Fix non-determinism due to modification times.
 ARG SOURCE_DATE_EPOCH=0
 RUN sed -i 's/^\(\([^:]*:\)\{2\}\)\([^:]*:\)\(.*\)$/\1'"$((${SOURCE_DATE_EPOCH} / 86400))"':\4/g' ${CHROOT}/etc/shadow
-RUN find "${CHROOT}" "${CHTEMP}" | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
+RUN find -L "${CHROOT}" "${CHTEMP}" | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 
 # Retrieve CA certificates for later.
 RUN true                                                                      \
-    ; CALINK=https://curl.se/ca/cacert-2023-12-12.pem                         \
-    ; CAFILE=${CHCERT}/etc/ssl/cert.pem                                       \
+    ; CALINK="https://curl.se/ca/cacert-2023-12-12.pem"                       \
+    ; CAFILE="${CHCERT}/etc/ssl/cert.pem"                                     \
+    ; mkdir -p "$(dirname ${CAFILE})"                                         \
     ; wget -O "${CAFILE}" -S "${CALINK}" && chmod 444 "${CAFILE}"             \
-    ; find "${CHCERT}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
+    ; find -L "${CHCERT}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 
 # Retrieve static `wget` for later.
 RUN case "${TARGETPLATFORM}" in                                               \
         linux/386)                                                            \
-            WGORIG=wget_busybox_amd_x86_64_gcc_Linux                          \
+            WGORIG="wget_busybox_i686_x86_gcc_Linux"                          \
         ;;                                                                    \
         linux/amd64)                                                          \
-            WGORIG=wget_busybox_i686_x86_gcc_Linux                            \
+            WGORIG="wget_busybox_amd_x86_64_gcc_Linux"                        \
         ;;                                                                    \
         *)                                                                    \
             echo "E: unsupported target platform: ${TARGETPLATFORM}"          \
             exit 1                                                            \
         ;;                                                                    \
     esac                                                                      \
-    ; ROOTBASE=https://raw.githubusercontent.com/Azathothas/Static-Binaries   \
-    ; ROOTVERS=baseutils_2023_12_15_07_02_58_AM                               \
-    ; WGNAME=wget                                                             \
-    ; WGLINK=${ROOTBASE}/${ROOTVERS}/${WGNAME}/${WGORIG}                      \
-    ; cd "${CHUSER}/usr/local/bin"                                            \
-    ; wget -O "${WGNAME}" -S "${WGLINK}" && chmod 777 "${WGNAME}"             \
-    ; find "${CHUSER}" -type f | xargs touch -cham -d "@1702623778"           \
-    ; find "${CHUSER}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
+    ; ROOTBASE="https://raw.githubusercontent.com/Azathothas/Static-Binaries" \
+    ; ROOTVERS="baseutils_2023_12_15_07_02_58_AM"                             \
+    ; ROOTDATE=1702623778                                                     \
+    ; CHBINDIR="${CHUSER}/usr/local/bin"                                      \
+    ; CHDOCDIR="${CHUSER}/usr/local/share/doc"                                \
+    ; WGBIN="$(echo $WGORIG | cut -d_ -f1)"                                   \
+    ; WGURL="${ROOTBASE}/${ROOTVERS}/${WGBIN}/${WGORIG}"                      \
+    ; WGDST="${CHBINDIR}/${WGORIG}"                                           \
+    ; WGLNK="${CHBINDIR}/${WGBIN}"                                            \
+    ; mkdir -p "${CHBINDIR}"                                                  \
+    ; wget -O "${WGDST}" -S "${WGURL}" && chmod 777 "${WGDST}"                \
+    ; cd "${CHBINDIR}" && ln -s "${WGORIG}" "${WGBIN}"                        \
+    ; WGTAG="$(wget -O- ${ROOTBASE}/${ROOTVERS}/${WGBIN}/version.txt 2>/dev/null | tr _ .)" \
+    ; WGCPY="${CHDOCDIR}/busybox/copyright"                                   \
+    ; mkdir -p "$(dirname ${WGCPY})"                                          \
+; { \
+    echo "The BusyBox package was assembled from sources obtained from:"                         ;\
+    echo "   https://busybox.net/downloads/busybox-${WGTAG}.tar.bz2"                             ;\
+    echo ""                                                                                      ;\
+    echo "BusyBox is an aggregate of multiple packages. These packages are"                      ;\
+    echo "copyrighted by their respective authors."                                              ;\
+    echo ""                                                                                      ;\
+    echo "License:"                                                                              ;\
+    echo ""                                                                                      ;\
+    echo "   This package is free software; you can redistribute it and/or modify"               ;\
+    echo "   it under the terms of the GNU General Public License as published by"               ;\
+    echo "   the Free Software Foundation; version 2 dated June, 1991."                          ;\
+    echo ""                                                                                      ;\
+    echo "   This package is distributed in the hope that it will be useful,"                    ;\
+    echo "   but WITHOUT ANY WARRANTY; without even the implied warranty of"                     ;\
+    echo "   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"                      ;\
+    echo "   GNU General Public License for more details."                                       ;\
+    echo ""                                                                                      ;\
+    echo "   You should have received a copy of the GNU General Public License"                  ;\
+    echo "   along with this package; if not, write to the Free Software"                        ;\
+    echo "   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,"                             ;\
+    echo "   MA 02110-1301, USA."                                                                ;\
+    echo ""                                                                                      ;\
+    echo "On Debian GNU/Linux systems, the complete text of the GNU General"                     ;\
+    echo "Public License can be found in \`/usr/share/common-licenses/GPL-2'."                   ;\
+  } > "${WGCPY}"                                                              \
+    ; find -L "${CHUSER}" -type f | xargs touch -cham -d "@${ROOTDATE}"       \
+    ; find -L "${CHUSER}" -type d | xargs touch -cham -d "@${SOURCE_DATE_EPOCH}"
 ###############################################################################
 
 
